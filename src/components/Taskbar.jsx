@@ -6,7 +6,7 @@ export default function Taskbar({ openWindows, activeWindowId, onWindowClick, on
   const time = useTime();
 
   return (
-    <div className="h-10 bg-win-gray border-t-2 border-white flex items-center px-1 fixed bottom-100 left-0 right-0 z-[100] select-none shadow-md">
+    <div className="h-10 bg-win-gray border-t-2 border-white flex items-center px-1 fixed bottom-0 left-0 right-0 z-[100] select-none shadow-md">
       <button 
         onClick={onStartClick}
         className="flex items-center gap-1 px-2 py-1 bg-win-gray border-2 border-white shadow-win-out active:shadow-win-in font-bold mr-2 hover:bg-gray-300 transition-colors"

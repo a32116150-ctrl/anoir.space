@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrolling, as windows will float */
+  /* font-family: 'Tahoma', 'Verdana', 'Segoe UI', sans-serif; -- Handled by React State */
+  -webkit-font-smoothing: none; /* Crisper pixel look */
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 18px; /* Further increased base font size */
+  font-weight: bold; /* Bold text everywhere */
+}
+
+/* Ensure font inheritance everywhere */
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* Retro Scrollbar */
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+::-webkit-scrollbar-track {
+  background: #dfdfdf;
+  border-left: 1px solid #ffffff;
+}
+::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border: 1px solid #ffffff;
+  box-shadow: inset 1px 1px #dfdfdf, inset -1px -1px #808080;
+}
+::-webkit-scrollbar-button {
+  background: #c0c0c0;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #ffffff;
+  box-shadow: inset 1px 1px #dfdfdf, inset -1px -1px #808080;
+}

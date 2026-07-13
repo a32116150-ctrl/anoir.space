@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calculator, ChevronRight, ChevronLeft, Send, Download, Sparkles, Clock, Layers, Zap } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 import { personalInfo } from '../../data/content';
 
 const PRICING = {
@@ -118,37 +119,143 @@ export default function QuoteEstimatorWindow({ onOpenWindow }) {
     const tl = TIMELINE_OPTIONS.find(x => x.key === timeline);
     const extrasList = selectedExtras.map(k => EXTRAS.find(e => e.key === k)?.label).filter(Boolean);
 
-    const text = `
-QUOTE ESTIMATE — Anoir Cherif
-Visual Creator & Motion Designer
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const w = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    const contentW = w - margin * 2;
 
-Service:     ${svc.label}
-Complexity:  ${t.label} — ${t.desc}
-Timeline:    ${tl.label} — ${tl.desc}
-${extrasList.length ? `Extras:      ${extrasList.join(', ')}` : ''}
+    // Colors
+    const navy = [0, 0, 128];
+    const darkNavy = [0, 0, 60];
+    const teal = [0, 96, 128];
+    const lightGray = [245, 245, 245];
+    const medGray = [180, 180, 180];
+    const darkGray = [80, 80, 80];
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ESTIMATED RANGE: ${formatPrice(estimate.min)} — ${formatPrice(estimate.max)}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // Header background
+    doc.setFillColor(...navy);
+    doc.rect(0, 0, w, 50, 'F');
 
-Note: This is an estimate. Final pricing
-depends on project scope and requirements.
+    // Accent line
+    doc.setFillColor(...teal);
+    doc.rect(0, 50, w, 3, 'F');
 
-Contact: ${personalInfo.email}
-Phone:   ${personalInfo.phone}
-Web:     anoir.space
-    `.trim();
+    // Title text
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.text('QUOTE ESTIMATE', margin, 22);
 
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Anoir_Cherif_Quote_${svc.label.replace(/\s+/g, '_')}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Anoir Cherif — Visual Creator & Motion Designer', margin, 32);
+
+    doc.setFontSize(9);
+    doc.setTextColor(180, 200, 220);
+    doc.text('www.anoir.space', margin, 42);
+
+    // Date on right
+    const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text(dateStr, w - margin, 22, { align: 'right' });
+
+    let y = 62;
+
+    // Service details section
+    doc.setFillColor(...lightGray);
+    doc.roundedRect(margin, y, contentW, 8, 1, 1, 'F');
+    doc.setTextColor(...navy);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('PROJECT DETAILS', margin + 4, y + 5.5);
+    y += 14;
+
+    const addRow = (label, value) => {
+      doc.setTextColor(...darkGray);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text(label, margin + 4, y);
+      doc.setTextColor(30, 30, 30);
+      doc.setFont('helvetica', 'bold');
+      doc.text(value, margin + 50, y);
+      y += 7;
+    };
+
+    addRow('Service:', svc.label);
+    addRow('Complexity:', `${t.label} — ${t.desc}`);
+    addRow('Timeline:', `${tl.label} — ${tl.desc}`);
+    if (extrasList.length > 0) {
+      addRow('Extras:', extrasList.join(', '));
+    }
+
+    y += 4;
+
+    // Divider
+    doc.setDrawColor(...medGray);
+    doc.setLineWidth(0.3);
+    doc.line(margin, y, w - margin, y);
+    y += 8;
+
+    // Price box
+    doc.setFillColor(...navy);
+    doc.roundedRect(margin, y, contentW, 32, 2, 2, 'F');
+
+    // Accent stripe on left of price box
+    doc.setFillColor(...teal);
+    doc.roundedRect(margin, y, 4, 32, 2, 2, 'F');
+    doc.rect(margin + 2, y, 2, 32, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text('ESTIMATED RANGE', margin + 10, y + 10);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    const priceText = `${formatPrice(estimate.min)} — ${formatPrice(estimate.max)}`;
+    doc.text(priceText, w / 2, y + 22, { align: 'center' });
+
+    y += 42;
+
+    // Disclaimer
+    doc.setFillColor(255, 253, 230);
+    doc.roundedRect(margin, y, contentW, 14, 1, 1, 'F');
+    doc.setDrawColor(220, 200, 100);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin, y, contentW, 14, 1, 1, 'S');
+    doc.setTextColor(120, 100, 30);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(7.5);
+    doc.text('This is an estimated range. Final pricing depends on project scope and requirements.', w / 2, y + 6, { align: 'center' });
+    doc.text('Valid for 30 days from date of issue.', w / 2, y + 11, { align: 'center' });
+
+    y += 24;
+
+    // Footer
+    doc.setFillColor(...darkNavy);
+    doc.rect(0, 270, w, 27, 'F');
+    doc.setFillColor(...teal);
+    doc.rect(0, 270, w, 1.5, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text('CONTACT', margin, 278);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text(personalInfo.email, margin, 284);
+    doc.setFont('helvetica', 'normal');
+    doc.text(personalInfo.phone || '', margin, 290);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('anoir.space', w - margin, 284, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text('Nabeul, Tunisia', w - margin, 290, { align: 'right' });
+
+    // Save
+    doc.save(`Anoir_Cherif_Quote_${svc.label.replace(/\s+/g, '_')}.pdf`);
   };
 
   const steps = [

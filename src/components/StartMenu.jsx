@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Monitor, Folder, Settings, Search, HelpCircle, Terminal, Power, User, Briefcase, Palette, Share2, Mail, Trash2, Star, Layers, Clock, MessageSquare, ChevronRight, Zap } from 'lucide-react';
+import { Monitor, Folder, Settings, Search, HelpCircle, Terminal, Power, User, Briefcase, Palette, Share2, Mail, Trash2, Star, Layers, Clock, MessageSquare, ChevronRight, Zap, Calculator } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function StartMenu({ onOpenWindow, onDownloadResume, onClose, isOpen }) {
@@ -12,6 +12,7 @@ export default function StartMenu({ onOpenWindow, onDownloadResume, onClose, isO
     { label: 'Skills & Tools', icon: Layers, action: () => onOpenWindow('skills') },
     { label: 'Experience', icon: Folder, action: () => onOpenWindow('experience') },
     { label: 'Services', icon: Star, action: () => onOpenWindow('services') },
+    { label: 'Get a Quote', icon: Calculator, action: () => onOpenWindow('quoteEstimator'), highlight: true },
     { label: 'Testimonials', icon: MessageSquare, action: () => onOpenWindow('testimonials') },
     { label: 'How I Work', icon: Zap, action: () => onOpenWindow('process') },
     { label: 'Paint', icon: Palette, action: () => onOpenWindow('paint') },

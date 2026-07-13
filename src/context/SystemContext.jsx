@@ -16,6 +16,7 @@ export const SystemProvider = ({ children }) => {
     { id: 'process', label: 'How I Work', type: 'system', icon: 'process' },
     { id: 'experience', label: 'Experience', type: 'system', icon: 'experience' },
     { id: 'services', label: 'Services', type: 'system', icon: 'services' },
+    { id: 'quoteEstimator', label: 'Get a Quote', type: 'system', icon: 'quoteEstimator' },
     { id: 'paint', label: 'Paint', type: 'system', icon: 'paint' },
     { id: 'contact', label: 'Contact', type: 'system', icon: 'contact' },
     { id: 'settings', label: 'Display Properties', type: 'system', icon: 'settings' },

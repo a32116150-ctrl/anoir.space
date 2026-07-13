@@ -38,6 +38,7 @@ const VideoLibraryWindow = lazy(() => import('./components/content/VideoLibraryW
 const SkillsWindow = lazy(() => import('./components/content/SkillsWindow'));
 const TestimonialsWindow = lazy(() => import('./components/content/TestimonialsWindow'));
 const ProcessWindow = lazy(() => import('./components/content/ProcessWindow'));
+const QuoteEstimatorWindow = lazy(() => import('./components/content/QuoteEstimatorWindow'));
 
 import { personalInfo } from './data/content';
 import { Trash2, Folder } from 'lucide-react';
@@ -65,6 +66,7 @@ const WINDOW_COMPONENTS = {
   skills: { title: 'System Information', component: SkillsWindow, width: 720, height: 600 },
   testimonials: { title: 'Testimonials — Notepad', component: TestimonialsWindow, width: 640, height: 450 },
   process: { title: 'How I Work — Creative Process', component: ProcessWindow, width: 700, height: 600 },
+  quoteEstimator: { title: 'Instant Quote Estimator', component: QuoteEstimatorWindow, width: 560, height: 620 },
 };
 
 function App() {

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Monitor, Trash2, FileText, HardDrive, Disc, Folder, Globe, User, Briefcase, Clock, Cpu, Film, PaintBucket, Phone, Settings, Zap } from 'lucide-react';
+import { Monitor, Trash2, FileText, HardDrive, Disc, Folder, Globe, User, Briefcase, Clock, Cpu, Film, PaintBucket, Phone, Settings, Zap, Calculator } from 'lucide-react';
 import { useSystem } from '../context/SystemContext';
 
 const DesktopIcon = ({ item, onDoubleClick, onContextMenu, variant = 'desktop' }) => {
@@ -27,6 +27,7 @@ const DesktopIcon = ({ item, onDoubleClick, onContextMenu, variant = 'desktop' }
   if (item.icon === 'contact') Icon = Phone;
   if (item.icon === 'settings') Icon = Settings;
   if (item.icon === 'process') Icon = Zap;
+  if (item.icon === 'quoteEstimator') Icon = Calculator;
 
   const isDesktop = variant === 'desktop';
 

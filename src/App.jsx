@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Window from './components/Window';
 import Taskbar from './components/Taskbar';
-import MenuBar from './components/MenuBar';
 import SystemDialog from './components/SystemDialog';
 import DesktopIcon from './components/DesktopIcon';
 import StartMenu from './components/StartMenu';
@@ -292,13 +291,6 @@ function App() {
       <div className="absolute top-2 left-1/2 -translate-x-1/2 z-[1] text-white/30 text-[10px] font-mono pointer-events-none select-none">
         Starting Windows 95...
       </div>
-
-      <MenuBar
-        onOpenWindow={openWindow}
-        onDownloadResume={handleDownloadResume}
-        showStatusbar={showStatusbar}
-        onToggleStatusbar={() => setShowStatusbar(!showStatusbar)}
-      />
 
       <div className="flex-1 flex overflow-hidden relative">
 

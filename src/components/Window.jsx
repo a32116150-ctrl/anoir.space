@@ -58,8 +58,8 @@ export default function Window({
     } else {
       setPrevSize(size);
       setPrevPosition(position);
-      setSize({ width: window.innerWidth - 20, height: window.innerHeight - 60 });
-      setPosition({ x: 10, y: 10 });
+      setSize({ width: window.innerWidth, height: window.innerHeight - 48 });
+      setPosition({ x: 0, y: 0 });
       setIsMaximized(true);
     }
   };
@@ -86,12 +86,12 @@ export default function Window({
       style={{
         zIndex,
         position: 'fixed',
-        left: isMaximized ? 10 : position.x,
-        top: isMaximized ? 10 : position.y,
-        width: isMaximized ? 'calc(100vw - 20px)' : size.width,
-        height: isMaximized ? 'calc(100dvh - 70px)' : size.height,
+        left: isMaximized ? 0 : position.x,
+        top: isMaximized ? 0 : position.y,
+        width: isMaximized ? '100vw' : size.width,
+        height: isMaximized ? 'calc(100dvh - 48px)' : size.height,
       }}
-      className="bg-win-gray border-2 border-win-gray-light shadow-win-out flex flex-col min-w-[300px] max-w-[calc(100vw-10px)] max-h-[calc(100dvh-70px)]"
+      className="bg-win-gray border-2 border-win-gray-light shadow-win-out flex flex-col min-w-[300px] max-w-[100vw] max-h-[calc(100dvh-48px)]"
       onMouseDown={onFocus}
       onTouchStart={onFocus}
       role="dialog"

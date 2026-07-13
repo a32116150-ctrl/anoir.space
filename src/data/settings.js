@@ -3,7 +3,10 @@ export const WALLPAPERS = [
   { id: 'teal', name: 'Windows Teal', type: 'color', value: '#008080' },
   { id: 'blue', name: 'Solid Blue', type: 'color', value: '#000080' },
   { id: 'black', name: 'Black', type: 'color', value: '#000000' },
-  { id: 'autumn', name: 'Autumn', type: 'color', value: '#d2691e' },
+  { id: 'autumn', name: 'Autumn', type: 'image', value: '/seasons/autumn.svg', color: '#d2691e' },
+  { id: 'spring', name: 'Spring', type: 'image', value: '/seasons/spring.svg', color: '#90ee90' },
+  { id: 'summer', name: 'Summer', type: 'image', value: '/seasons/summer.svg', color: '#87ceeb' },
+  { id: 'winter', name: 'Winter', type: 'image', value: '/seasons/winter.svg', color: '#b0c4de' },
 ];
 
 export const FONTS = [

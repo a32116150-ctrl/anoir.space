@@ -86,11 +86,7 @@ export default function ExperienceWindow() {
         onDoubleClick={onDoubleClick}
         onContextMenu={(e) => {
             e.preventDefault();
-            // Custom Context Menu logic would go here, using simple prompt for now
-            const action = window.prompt(`Options for '${label}':\nType 'copy', 'cut', or 'delete'`, '');
-            if (action === 'delete') deleteItem(id);
-            if (action === 'copy') handleCopy(id, data, false);
-            if (action === 'cut') handleCopy(id, data, true);
+            e.stopPropagation();
         }}
       >
         <div className="w-16 h-16 flex items-center justify-center relative">
@@ -239,12 +235,10 @@ export default function ExperienceWindow() {
         ref={containerRef} 
         className="flex-1 min-h-[300px] bg-white border border-gray-300 shadow-inner overflow-hidden relative"
         onContextMenu={(e) => {
-            // Background context menu for Paste
             if (e.target === e.currentTarget) {
                 e.preventDefault();
                 if (clipboard) {
-                    const action = window.confirm(`Paste item '${clipboard.data.company || 'Folder'}' here?`);
-                    if (action) handlePaste();
+                    handlePaste();
                 }
             }
         }}
@@ -254,7 +248,7 @@ export default function ExperienceWindow() {
         {/* Help Text overlay - Only show in list view */}
         {!viewingFile && (
             <div className="absolute bottom-2 right-2 text-[10px] text-gray-400 pointer-events-none select-none bg-white/80 px-1">
-                Right-click item to Copy/Cut • Right-click background to Paste
+                Double-click to open • Drag items to rearrange
             </div>
         )}
       </div>

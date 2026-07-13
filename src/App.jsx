@@ -1,67 +1,96 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Window from './components/Window';
-import Toolbar from './components/Toolbar';
 import Taskbar from './components/Taskbar';
 import MenuBar from './components/MenuBar';
 import SystemDialog from './components/SystemDialog';
 import DesktopIcon from './components/DesktopIcon';
+import StartMenu from './components/StartMenu';
+import ContextMenu from './components/ContextMenu';
+import BootScreen from './components/content/BootScreen';
+import WelcomeWizard from './components/WelcomeWizard';
+import ErrorBoundary from './components/ErrorBoundary';
+import Clippy from './components/Clippy';
 import { useSystem } from './context/SystemContext';
+import { WALLPAPERS, FONTS } from './data/settings';
 
-// Content Components
+// Eagerly loaded (needed immediately after boot)
 import AboutWindow from './components/content/AboutWindow';
-import ExperienceWindow from './components/content/ExperienceWindow';
-import NetworkWindow from './components/content/NetworkWindow';
-import ServicesWindow from './components/content/ServicesWindow';
-import ContactWindow from './components/content/ContactWindow';
-import SettingsWindow, { WALLPAPERS, FONTS } from './components/content/SettingsWindow';
-import PaintWindow from './components/content/PaintWindow';
-import ComputerWindow from './components/content/ComputerWindow';
-import TrashWindow from './components/content/TrashWindow';
-import FileViewerWindow from './components/content/FileViewerWindow';
-import AfterEffectsWindow from './components/content/AfterEffectsWindow';
-import IllustratorWindow from './components/content/IllustratorWindow';
-import PhotoshopWindow from './components/content/PhotoshopWindow';
-import PremiereWindow from './components/content/PremiereWindow';
-import FolderWindow from './components/content/FolderWindow';
-import WinampWindow from './components/content/WinampWindow';
+
+// Lazy loaded content windows (code splitting)
+const ExperienceWindow = lazy(() => import('./components/content/ExperienceWindow'));
+const NetworkWindow = lazy(() => import('./components/content/NetworkWindow'));
+const ServicesWindow = lazy(() => import('./components/content/ServicesWindow'));
+const ContactWindow = lazy(() => import('./components/content/ContactWindow'));
+const SettingsWindow = lazy(() => import('./components/content/SettingsWindow'));
+const PaintWindow = lazy(() => import('./components/content/PaintWindow'));
+const ComputerWindow = lazy(() => import('./components/content/ComputerWindow'));
+const TrashWindow = lazy(() => import('./components/content/TrashWindow'));
+const FileViewerWindow = lazy(() => import('./components/content/FileViewerWindow'));
+const AfterEffectsWindow = lazy(() => import('./components/content/AfterEffectsWindow'));
+const IllustratorWindow = lazy(() => import('./components/content/IllustratorWindow'));
+const PhotoshopWindow = lazy(() => import('./components/content/PhotoshopWindow'));
+const PremiereWindow = lazy(() => import('./components/content/PremiereWindow'));
+const FolderWindow = lazy(() => import('./components/content/FolderWindow'));
+const WinampWindow = lazy(() => import('./components/content/WinampWindow'));
+const TimelineWindow = lazy(() => import('./components/content/TimelineWindow'));
+const PortfolioWindow = lazy(() => import('./components/content/PortfolioWindow'));
+const VideoLibraryWindow = lazy(() => import('./components/content/VideoLibraryWindow'));
+const SkillsWindow = lazy(() => import('./components/content/SkillsWindow'));
+const TestimonialsWindow = lazy(() => import('./components/content/TestimonialsWindow'));
+const ProcessWindow = lazy(() => import('./components/content/ProcessWindow'));
 
 import { personalInfo } from './data/content';
+import { Trash2, Folder } from 'lucide-react';
 
 const WINDOW_COMPONENTS = {
-  about: { title: 'About Me', component: AboutWindow, width: 500 },
-  experience: { title: 'Experience', component: ExperienceWindow, width: 600 },
-  network: { title: 'Network Connections', component: NetworkWindow, width: 400 },
-  services: { title: 'Services Palette', component: ServicesWindow, width: 350 },
-  contact: { title: 'Contact Info', component: ContactWindow, width: 400 },
-  settings: { title: 'Display Properties', component: SettingsWindow, width: 400 },
-  paint: { title: 'untitled - Paint', component: PaintWindow, width: 600 },
-  computer: { title: 'My Computer', component: ComputerWindow, width: 600 },
-  trash: { title: 'Recycle Bin', component: TrashWindow, width: 500 },
-  fileViewer: { title: 'Document Viewer', component: FileViewerWindow, width: 500 },
-  ae: { title: 'Adobe After Effects 2024', component: AfterEffectsWindow, width: 800 },
-  ai: { title: 'Adobe Illustrator 2024', component: IllustratorWindow, width: 800 },
-  ps: { title: 'Adobe Photoshop 2024', component: PhotoshopWindow, width: 800 },
-  pr: { title: 'Adobe Premiere Pro 2024', component: PremiereWindow, width: 800 },
-  folder: { title: 'Folder', component: FolderWindow, width: 600 },
-  winamp: { title: 'Winamp', component: WinampWindow, width: 400 },
+  about: { title: 'About Me — Anoir Cherif', component: AboutWindow, width: 720, height: 560 },
+  experience: { title: 'Experience', component: ExperienceWindow, width: 760, height: 600 },
+  network: { title: 'Network Connections', component: NetworkWindow, width: 600, height: 450 },
+  services: { title: 'Services — Anoir Cherif', component: ServicesWindow, width: 600, height: 560 },
+  contact: { title: 'Contact — Anoir Cherif', component: ContactWindow, width: 640, height: 600 },
+  settings: { title: 'Display Properties', component: SettingsWindow, width: 560, height: 520 },
+  paint: { title: 'untitled - Paint', component: PaintWindow, width: 800, height: 600 },
+  computer: { title: 'My Computer', component: ComputerWindow, width: 800, height: 560 },
+  trash: { title: 'Recycle Bin', component: TrashWindow, width: 700, height: 500 },
+  fileViewer: { title: 'Document Viewer', component: FileViewerWindow, width: 700, height: 700 },
+  ae: { title: 'Adobe After Effects 2024', component: AfterEffectsWindow, width: 1000, height: 700 },
+  ai: { title: 'Adobe Illustrator 2024', component: IllustratorWindow, width: 1000, height: 700 },
+  ps: { title: 'Adobe Photoshop 2024', component: PhotoshopWindow, width: 1000, height: 700 },
+  pr: { title: 'Adobe Premiere Pro 2024', component: PremiereWindow, width: 1000, height: 700 },
+  folder: { title: 'Folder', component: FolderWindow, width: 800, height: 560 },
+  winamp: { title: 'Winamp', component: WinampWindow, width: 500, height: 350 },
+  timeline: { title: 'My Career — Timeline', component: TimelineWindow, width: 800, height: 650 },
+  portfolio: { title: 'My Projects — Portfolio', component: PortfolioWindow, width: 1000, height: 700 },
+  videoLibrary: { title: 'Video Work — Library', component: VideoLibraryWindow, width: 1000, height: 700 },
+  skills: { title: 'System Information', component: SkillsWindow, width: 720, height: 600 },
+  testimonials: { title: 'Testimonials — Notepad', component: TestimonialsWindow, width: 640, height: 450 },
+  process: { title: 'How I Work — Creative Process', component: ProcessWindow, width: 700, height: 600 },
 };
 
 function App() {
-  const { desktopItems, pasteToDesktop, clipboard, addToTrash } = useSystem();
-  const [windows, setWindows] = useState([
-    { id: 'about', isOpen: true, zIndex: 1 }, // Open About by default
-  ]);
-  const [activeWindowId, setActiveWindowId] = useState('about');
+  const {
+    desktopItems, pasteToDesktop, clipboard, addToTrash,
+    deselectAll,
+    startMenuOpen, toggleStartMenu, closeStartMenu,
+    contextMenu, openContextMenu, closeContextMenu,
+    minimizedWindows, restoreWindow
+  } = useSystem();
+
+  const [windows, setWindows] = useState([]);
+  const [activeWindowId, setActiveWindowId] = useState(null);
   const [nextZIndex, setNextZIndex] = useState(2);
   const [isSystemDialogOpen, setIsSystemDialogOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [wallpaper, setWallpaper] = useState(WALLPAPERS[0]); // Default to first wallpaper (Clouds)
-  const [font, setFont] = useState(FONTS[0]); // Default to Tahoma
-  const [showToolbar, setShowToolbar] = useState(true);
+  const [wallpaper, setWallpaper] = useState(WALLPAPERS[0]);
+  const [font, setFont] = useState(FONTS[0]);
   const [showStatusbar, setShowStatusbar] = useState(true);
-  const [showColorBox, setShowColorBox] = useState(true);
 
-  // Apply font to body globally to ensure it hits everything including portals/modals
+  // Boot & Welcome states
+  const [isBooting, setIsBooting] = useState(true);
+  const [showWizard, setShowWizard] = useState(false);
+  const [hasBooted, setHasBooted] = useState(false);
+
   useEffect(() => {
     document.body.style.fontFamily = font.value;
   }, [font]);
@@ -72,176 +101,325 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const openWindow = (id, data = null) => {
+  // Handle boot completion
+  const handleBootComplete = useCallback(() => {
+    setIsBooting(false);
+    setHasBooted(true);
+
+    // Open the About window after boot
+    setWindows([{ id: 'about', isOpen: true, zIndex: 1 }]);
+    setActiveWindowId('about');
+
+    // Check if wizard should be shown
+    const wizardDismissed = localStorage.getItem('anoir-wizard-dismissed');
+    if (!wizardDismissed) {
+      // Show wizard after a short delay
+      setTimeout(() => setShowWizard(true), 800);
+    }
+  }, []);
+
+  // Check if user has visited before (skip boot for returning visitors)
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem('anoir-has-visited');
+    if (hasVisited) {
+      setIsBooting(false);
+      setHasBooted(true);
+      setWindows([{ id: 'about', isOpen: true, zIndex: 1 }]);
+      setActiveWindowId('about');
+    }
+  }, []);
+
+  // Mark as visited after boot
+  useEffect(() => {
+    if (hasBooted) {
+      sessionStorage.setItem('anoir-has-visited', 'true');
+    }
+  }, [hasBooted]);
+
+  const openWindow = useCallback((id, data = null) => {
+    restoreWindow(id);
+    const currentZ = nextZIndex;
     setWindows((prev) => {
       const exists = prev.find((w) => w.id === id);
       if (exists) {
-        // Just bring to front and update data if provided
         if (!exists.isOpen) {
-            return prev.map(w => w.id === id ? { ...w, isOpen: true, zIndex: nextZIndex, data: data || w.data } : w);
+          return prev.map(w => w.id === id ? { ...w, isOpen: true, zIndex: currentZ, data: data || w.data } : w);
         }
-        return prev.map(w => w.id === id ? { ...w, zIndex: nextZIndex, data: data || w.data } : w);
+        return prev.map(w => w.id === id ? { ...w, zIndex: currentZ, data: data || w.data } : w);
       }
-      return [...prev, { id, isOpen: true, zIndex: nextZIndex, data }];
+      return [...prev, { id, isOpen: true, zIndex: currentZ, data }];
     });
     setNextZIndex(prev => prev + 1);
     setActiveWindowId(id);
-  };
+  }, [nextZIndex, restoreWindow]);
 
-  const closeWindow = (id) => {
+  const closeWindow = useCallback((id) => {
     setWindows((prev) => prev.map(w => w.id === id ? { ...w, isOpen: false } : w));
-    if (activeWindowId === id) {
-        setActiveWindowId(null);
-    }
-  };
+    if (activeWindowId === id) setActiveWindowId(null);
+  }, [activeWindowId]);
 
-  const focusWindow = (id) => {
+  const focusWindow = useCallback((id) => {
     if (activeWindowId === id) return;
-    setWindows((prev) => prev.map(w => w.id === id ? { ...w, zIndex: nextZIndex } : w));
+    const currentZ = nextZIndex;
+    setWindows((prev) => prev.map(w => w.id === id ? { ...w, zIndex: currentZ } : w));
     setNextZIndex(prev => prev + 1);
     setActiveWindowId(id);
-  };
+  }, [activeWindowId, nextZIndex]);
 
-  const handleStartClick = () => {
-    setIsSystemDialogOpen(true);
-  };
+  // Keyboard shortcuts (must be after closeWindow/focusWindow declarations)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && activeWindowId) {
+        closeWindow(activeWindowId);
+        return;
+      }
+      if (e.altKey && e.key === 'Tab') {
+        e.preventDefault();
+        const openWins = windows.filter(w => w.isOpen);
+        if (openWins.length <= 1) return;
+        const currentIdx = openWins.findIndex(w => w.id === activeWindowId);
+        const nextIdx = (currentIdx + 1) % openWins.length;
+        focusWindow(openWins[nextIdx].id);
+        restoreWindow(openWins[nextIdx].id);
+        return;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeWindowId, windows, closeWindow, focusWindow, restoreWindow]);
 
-  const handleSystemDialogYes = () => {
+  // Konami Code Easter Egg
+  useEffect(() => {
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiIndex = 0;
+    const handleKonami = (e) => {
+      if (e.key === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+          konamiIndex = 0;
+          const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+          for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.style.cssText = `position:fixed;width:8px;height:8px;background:${colors[Math.floor(Math.random() * colors.length)]};left:${Math.random() * 100}vw;top:-10px;z-index:10000;pointer-events:none;animation:confetti-fall ${1 + Math.random() * 2}s ease-out forwards;`;
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 3000);
+          }
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    };
+    window.addEventListener('keydown', handleKonami);
+    return () => window.removeEventListener('keydown', handleKonami);
+  }, []);
+
+  const handleStartClick = useCallback(() => {
+    toggleStartMenu();
+  }, [toggleStartMenu]);
+
+  const handleSystemDialogYes = useCallback(() => {
     window.location.href = `mailto:${personalInfo.email}`;
     setIsSystemDialogOpen(false);
-  };
+  }, []);
 
-  const handleSystemDialogNo = () => {
-    // Simulate resume download
+  const handleSystemDialogNo = useCallback(() => {
     const link = document.createElement('a');
-    link.href = '/resume.pdf'; // Assuming this exists or will exist
+    link.href = '/resume.pdf';
     link.download = 'Anoir_Cherif_Resume.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     setIsSystemDialogOpen(false);
-  };
+  }, []);
 
-  const handleDownloadResume = () => {
+  const handleDownloadResume = useCallback(() => {
     handleSystemDialogNo();
-  };
+  }, [handleSystemDialogNo]);
+
+  const handleDesktopContextMenu = useCallback((e) => {
+    e.preventDefault();
+    const items = [
+      { label: 'Arrange Icons', disabled: true },
+      { label: 'Line up Icons', action: () => {} },
+      { separator: true },
+      { label: 'Paste', disabled: !clipboard, action: () => { pasteToDesktop(); }, icon: <Folder size={12} /> },
+      { label: 'New', disabled: true },
+      { separator: true },
+      { label: 'Properties', disabled: true },
+    ];
+    openContextMenu(e.clientX, e.clientY, items, null);
+  }, [clipboard, pasteToDesktop, openContextMenu]);
+
+  const handleIconContextMenu = useCallback((e, item) => {
+    const items = [
+      { label: 'Open', action: () => {
+        if (item.type === 'folder') openWindow('folder', { title: item.label, items: item.items });
+        else openWindow(item.id);
+      }, icon: <Folder size={12} /> },
+      { separator: true },
+      { label: 'Send to', disabled: true },
+      { label: 'Cut', disabled: true },
+      { label: 'Copy', disabled: true },
+      { separator: true },
+      { label: 'Delete', action: () => addToTrash(item.id), icon: <Trash2 size={12} /> },
+      { label: 'Rename', disabled: true },
+      { separator: true },
+      { label: 'Properties', disabled: true },
+    ];
+    openContextMenu(e.clientX, e.clientY, items, item.id);
+  }, [openContextMenu, openWindow, addToTrash]);
+
+  const handleDesktopClick = useCallback((e) => {
+    if (e.target === e.currentTarget || e.target.classList.contains('desktop-layer')) {
+      deselectAll();
+    }
+  }, [deselectAll]);
+
+  // Show boot screen
+  if (isBooting) {
+    return <BootScreen onComplete={handleBootComplete} />;
+  }
 
   return (
-    <div 
-      className="bg-win-gray min-h-screen flex flex-col overflow-hidden relative text-base" 
+    <div
+      className="bg-win-gray min-h-screen flex flex-col overflow-hidden relative text-base"
       style={{ fontFamily: font.value }}
     >
       {/* Scanline Effect */}
-      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_4px,6px_100%] z-[9999] opacity-20"></div>
+      <div className="scanline-overlay absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.08)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_4px,6px_100%] z-[9999] opacity-20"></div>
 
-      <MenuBar 
-        onOpenWindow={openWindow} 
+      {/* Boot Message */}
+      <div className="absolute top-2 left-1/2 -translate-x-1/2 z-[1] text-white/30 text-[10px] font-mono pointer-events-none select-none">
+        Starting Windows 95...
+      </div>
+
+      <MenuBar
+        onOpenWindow={openWindow}
         onDownloadResume={handleDownloadResume}
-        showToolbar={showToolbar}
-        onToggleToolbar={() => setShowToolbar(!showToolbar)}
         showStatusbar={showStatusbar}
         onToggleStatusbar={() => setShowStatusbar(!showStatusbar)}
-        showColorBox={showColorBox}
-        onToggleColorBox={() => setShowColorBox(!showColorBox)}
       />
 
       <div className="flex-1 flex overflow-hidden relative">
-        {showToolbar && <Toolbar onOpenWindow={openWindow} showColorBox={showColorBox} />}
-        
+
         {/* Main Canvas */}
-        <div 
-          className="flex-1 relative overflow-hidden shadow-inner m-2 border-2 border-gray-500 shadow-win-in"
+        <div
+          className="flex-1 relative overflow-hidden shadow-inner m-1 border-2 border-[#808080]"
           style={{
             background: wallpaper.type === 'color' ? wallpaper.value : `url(${wallpaper.value})`,
-            backgroundColor: wallpaper.color || wallpaper.value, // Fallback/Underlay
+            backgroundColor: wallpaper.color || wallpaper.value,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
           }}
-          onContextMenu={(e) => {
-            if (e.target === e.currentTarget || e.target.classList.contains('desktop-layer')) {
-              e.preventDefault();
-              if (clipboard) {
-                  if (window.confirm(`Paste '${clipboard.data.company || clipboard.data.label || 'Item'}' to Desktop?`)) {
-                      pasteToDesktop();
-                  }
-              }
-            }
-          }}
+          onContextMenu={handleDesktopContextMenu}
+          onClick={handleDesktopClick}
         >
-           {/* Desktop Icons Layer */}
-           <div className="desktop-layer absolute top-2 left-2 flex flex-col flex-wrap gap-2 h-full w-full content-start z-0 pointer-events-auto">
-              {desktopItems.map(item => (
-                  <DesktopIcon 
-                    key={item.id} 
-                    item={item} 
-                    onDoubleClick={(item) => {
-                      if (item.type === 'system') {
-                          openWindow(item.id);
-                      } else if (item.type === 'folder') {
-                          openWindow('folder', { title: item.label, items: item.items });
-                      } else {
-                          alert(`File: ${item.label}`);
-                      }
-                  }}
-                    onContextMenu={(e, item) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        if (item.type !== 'system') {
-                             if (window.confirm(`Move '${item.label}' to Recycle Bin?`)) {
-                                 addToTrash(item.id);
-                             }
-                        }
-                    }}
-                  />
-              ))}
-           </div>
+          {/* Desktop Icons Layer */}
+          <div className="desktop-layer absolute top-2 left-2 grid grid-cols-2 gap-0 h-full w-max content-start z-0 pointer-events-auto">
+            {desktopItems.map(item => (
+              <DesktopIcon
+                key={item.id}
+                item={item}
+                onDoubleClick={(item) => {
+                  if (item.type === 'system') {
+                    openWindow(item.id);
+                  } else if (item.type === 'folder') {
+                    openWindow('folder', { title: item.label, items: item.items });
+                  } else {
+                    alert(`File: ${item.label}`);
+                  }
+                }}
+                onContextMenu={handleIconContextMenu}
+              />
+            ))}
+          </div>
 
-           {/* Windows Layer */}
-           {windows.map((win) => {
-             const config = WINDOW_COMPONENTS[win.id];
-             if (!config) return null;
-             const Content = config.component;
-             
-             // Allow dynamic title for file viewer
-             const title = win.data?.title || config.title;
+          {/* Windows Layer */}
+          <AnimatePresence>
+            {windows.map((win) => {
+              if (minimizedWindows.includes(win.id)) return null;
+              const config = WINDOW_COMPONENTS[win.id];
+              if (!config) return null;
+              const Content = config.component;
+              const title = win.data?.title || config.title;
 
-             return (
-               <Window
-                 key={win.id}
-                 id={win.id}
-                 title={title}
-                 isOpen={win.isOpen}
-                 onClose={() => closeWindow(win.id)}
-                 isActive={activeWindowId === win.id}
-                 onFocus={() => focusWindow(win.id)}
-                 zIndex={win.zIndex}
-                 isMobile={isMobile}
-               >
-                 <Content 
-                    currentWallpaper={wallpaper} 
-                    onWallpaperChange={setWallpaper}
-                    currentFont={font}
-                    onFontChange={setFont}
-                    onOpenWindow={openWindow}
-                    data={win.data}
-                 />
-               </Window>
-             );
-           })}
+              return (
+                <Window
+                  key={win.id}
+                  id={win.id}
+                  title={title}
+                  isOpen={win.isOpen}
+                  onClose={() => closeWindow(win.id)}
+                  isActive={activeWindowId === win.id}
+                  onFocus={() => focusWindow(win.id)}
+                  zIndex={win.zIndex}
+                  isMobile={isMobile}
+                  initialWidth={config.width}
+                  initialHeight={config.height}
+                >
+                  <ErrorBoundary>
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-full gap-2 text-sm text-gray-500">
+                        <motion.div
+                          className="w-4 h-4 border-2 border-[#000080] border-t-transparent rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                        />
+                        Loading...
+                      </div>
+                    }>
+                      <Content
+                        currentWallpaper={wallpaper}
+                        onWallpaperChange={setWallpaper}
+                        currentFont={font}
+                        onFontChange={setFont}
+                        onOpenWindow={openWindow}
+                        data={win.data}
+                      />
+                    </Suspense>
+                  </ErrorBoundary>
+                </Window>
+              );
+            })}
+          </AnimatePresence>
         </div>
       </div>
 
       {showStatusbar && (
-      <Taskbar 
-        openWindows={windows.filter(w => w.isOpen).map(w => ({ id: w.id, title: WINDOW_COMPONENTS[w.id]?.title }))}
-        activeWindowId={activeWindowId}
-        onWindowClick={focusWindow}
-        onStartClick={handleStartClick}
-      />
+        <Taskbar
+          openWindows={windows.filter(w => w.isOpen).map(w => ({ id: w.id, title: WINDOW_COMPONENTS[w.id]?.title }))}
+          activeWindowId={activeWindowId}
+          onWindowClick={focusWindow}
+          onStartClick={handleStartClick}
+        />
       )}
 
-      <SystemDialog 
+      {/* Start Menu */}
+      <StartMenu
+        isOpen={startMenuOpen}
+        onClose={closeStartMenu}
+        onOpenWindow={openWindow}
+        onDownloadResume={handleDownloadResume}
+      />
+
+      {/* Context Menu */}
+      <ContextMenu menu={contextMenu} onClose={closeContextMenu} />
+
+      {/* Welcome Wizard */}
+      <AnimatePresence>
+        {showWizard && (
+          <WelcomeWizard
+            onClose={() => setShowWizard(false)}
+            onOpenWindow={openWindow}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Clippy Assistant */}
+      {hasBooted && <Clippy />}
+
+      <SystemDialog
         isOpen={isSystemDialogOpen}
         onClose={() => setIsSystemDialogOpen(false)}
         onYes={handleSystemDialogYes}

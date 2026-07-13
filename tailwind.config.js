@@ -17,8 +17,8 @@ export default {
         'mono': ['"Courier New"', 'monospace'],
       },
       boxShadow: {
-        'win-out': 'inset 1px 1px #dfdfdf, inset -1px -1px #000000, 1px 1px #000000',
-        'win-in': 'inset 1px 1px #000000, inset -1px -1px #dfdfdf, 1px 1px #dfdfdf',
+        'win-out': 'inset -1px -1px 0 0 #000000, inset 1px 1px 0 0 #dfdfdf, 1px 1px 0 0 #000000',
+        'win-in': 'inset 1px 1px 0 0 #000000, inset -1px -1px 0 0 #dfdfdf, 1px 1px 0 0 #dfdfdf',
       }
     },
   },

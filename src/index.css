@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,39 +7,87 @@
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevent scrolling, as windows will float */
-  /* font-family: 'Tahoma', 'Verdana', 'Segoe UI', sans-serif; -- Handled by React State */
-  -webkit-font-smoothing: none; /* Crisper pixel look */
-  -moz-osx-font-smoothing: grayscale;
-  font-size: 18px; /* Further increased base font size */
-  font-weight: bold; /* Bold text everywhere */
+  overflow: hidden;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }
 
-/* Ensure font inheritance everywhere */
 button, input, textarea, select {
   font-family: inherit;
   font-size: inherit;
-  font-weight: inherit;
 }
 
-/* Retro Scrollbar */
+:focus-visible {
+  outline: 1px dotted #000080;
+  outline-offset: 1px;
+}
+
 ::-webkit-scrollbar {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #dfdfdf;
-  border-left: 1px solid #ffffff;
+  background: #c0c0c0;
+  border: 1px solid #808080;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #c0c0c0;
   border: 1px solid #ffffff;
-  box-shadow: inset 1px 1px #dfdfdf, inset -1px -1px #808080;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
 }
+
 ::-webkit-scrollbar-button {
   background: #c0c0c0;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border: 1px solid #ffffff;
-  box-shadow: inset 1px 1px #dfdfdf, inset -1px -1px #808080;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+}
+
+::-webkit-scrollbar-button:active {
+  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf;
+}
+
+::-webkit-scrollbar-corner {
+  background: #c0c0c0;
+}
+
+/* Marquee animation for Winamp */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}
+
+@keyframes subtle-shimmer {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.3; }
+}
+
+.scanline-overlay {
+  animation: subtle-shimmer 4s ease-in-out infinite;
+}
+
+/* Confetti animation for Konami code easter egg */
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .scanline-overlay {
+    animation: none;
+  }
+  .animate-marquee {
+    animation: none;
+  }
 }

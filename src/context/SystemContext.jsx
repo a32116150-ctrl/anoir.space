@@ -1,13 +1,26 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const SystemContext = createContext();
 
 export const useSystem = () => useContext(SystemContext);
 
 export const SystemProvider = ({ children }) => {
-  const [clipboard, setClipboard] = useState(null); // { type: 'file'|'folder', data: object, operation: 'copy'|'cut' }
+  const [clipboard, setClipboard] = useState(null);
+  const [selectedIconId, setSelectedIconId] = useState(null);
   const [desktopItems, setDesktopItems] = useState([
+    { id: 'about', label: 'About Me', type: 'system', icon: 'about' },
+    { id: 'portfolio', label: 'My Projects', type: 'system', icon: 'portfolio' },
+    { id: 'videoLibrary', label: 'Video Work', type: 'system', icon: 'videoLibrary' },
+    { id: 'timeline', label: 'My Career', type: 'system', icon: 'timeline' },
+    { id: 'skills', label: 'System Info', type: 'system', icon: 'skills' },
+    { id: 'process', label: 'How I Work', type: 'system', icon: 'process' },
+    { id: 'experience', label: 'Experience', type: 'system', icon: 'experience' },
+    { id: 'services', label: 'Services', type: 'system', icon: 'services' },
+    { id: 'paint', label: 'Paint', type: 'system', icon: 'paint' },
+    { id: 'contact', label: 'Contact', type: 'system', icon: 'contact' },
+    { id: 'settings', label: 'Display Properties', type: 'system', icon: 'settings' },
     { id: 'computer', label: 'My Computer', type: 'system', icon: 'computer' },
+    { id: 'network', label: 'Network Connections', type: 'system', icon: 'network' },
     { id: 'trash', label: 'Recycle Bin', type: 'system', icon: 'trash' },
     { id: 'software', label: 'Software I Use', type: 'folder', icon: 'folder', items: [
         { id: 'ae', label: 'Adobe After Effects', type: 'system', icon: 'afterEffects' },
@@ -26,15 +39,16 @@ export const SystemProvider = ({ children }) => {
     { id: 'trash-7', label: 'render_final_FINAL.mp4', type: 'file', icon: 'file' },
     { id: 'trash-8', label: 'render_final_FINAL_v2_REAL.mp4', type: 'file', icon: 'file' },
   ]);
+  const [startMenuOpen, setStartMenuOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null);
+  const [minimizedWindows, setMinimizedWindows] = useState([]);
 
-  const copyToClipboard = (data, operation = 'copy') => {
-    console.log('Copied to clipboard:', data);
+  const copyToClipboard = useCallback((data, operation = 'copy') => {
     setClipboard({ data, operation });
-  };
+  }, []);
 
-  const pasteToDesktop = () => {
+  const pasteToDesktop = useCallback(() => {
     if (!clipboard) return;
-    
     const newItem = {
       ...clipboard.data,
       id: `desktop-${Date.now()}`,
@@ -43,32 +57,79 @@ export const SystemProvider = ({ children }) => {
       icon: 'file',
       originalData: clipboard.data
     };
-
     setDesktopItems(prev => [...prev, newItem]);
-    
     if (clipboard.operation === 'cut') {
-        // In a real FS, we would delete the source. 
-        // Here we rely on the source component to handle "cut" visual state or ignore it for cross-app paste.
+      setTrashItems(prev => [...prev, { id: `trash-${Date.now()}`, label: clipboard.data.label || 'Untitled', type: 'file', icon: 'file' }]);
     }
     setClipboard(null);
-  };
+  }, [clipboard]);
 
-  const addToTrash = (id) => {
+  const addToTrash = useCallback((id) => {
     const item = desktopItems.find(i => i.id === id);
     if (item) {
-        setTrashItems(prev => [...prev, item]);
-        setDesktopItems(prev => prev.filter(i => i.id !== id));
+      setTrashItems(prev => [...prev, item]);
+      setDesktopItems(prev => prev.filter(i => i.id !== id));
     }
-  };
+  }, [desktopItems]);
+
+  const selectIcon = useCallback((id) => {
+    setSelectedIconId(id);
+  }, []);
+
+  const deselectAll = useCallback(() => {
+    setSelectedIconId(null);
+  }, []);
+
+  const toggleStartMenu = useCallback(() => {
+    setStartMenuOpen(prev => !prev);
+  }, []);
+
+  const closeStartMenu = useCallback(() => {
+    setStartMenuOpen(false);
+  }, []);
+
+  const openContextMenu = useCallback((x, y, items, targetId) => {
+    setContextMenu({ x, y, items, targetId });
+  }, []);
+
+  const closeContextMenu = useCallback(() => {
+    setContextMenu(null);
+  }, []);
+
+  const minimizeWindow = useCallback((id) => {
+    setMinimizedWindows(prev => prev.includes(id) ? prev : [...prev, id]);
+  }, []);
+
+  const restoreWindow = useCallback((id) => {
+    setMinimizedWindows(prev => prev.filter(w => w !== id));
+  }, []);
+
+  const emptyTrash = useCallback(() => {
+    setTrashItems([]);
+  }, []);
 
   return (
-    <SystemContext.Provider value={{ 
-      clipboard, 
-      copyToClipboard, 
-      desktopItems, 
-      pasteToDesktop, 
-      trashItems, 
-      addToTrash 
+    <SystemContext.Provider value={{
+      clipboard,
+      copyToClipboard,
+      desktopItems,
+      setDesktopItems,
+      pasteToDesktop,
+      trashItems,
+      addToTrash,
+      selectedIconId,
+      selectIcon,
+      deselectAll,
+      startMenuOpen,
+      toggleStartMenu,
+      closeStartMenu,
+      contextMenu,
+      openContextMenu,
+      closeContextMenu,
+      minimizedWindows,
+      minimizeWindow,
+      restoreWindow,
+      emptyTrash,
     }}>
       {children}
     </SystemContext.Provider>

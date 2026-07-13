@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function MenuBar({ onOpenWindow, onDownloadResume, showToolbar, onToggleToolbar, showStatusbar, onToggleStatusbar, showColorBox, onToggleColorBox }) {
+export default function MenuBar({ onOpenWindow, onDownloadResume, showStatusbar, onToggleStatusbar }) {
   const [activeMenu, setActiveMenu] = useState(null);
 
   const menus = [
@@ -21,10 +21,8 @@ export default function MenuBar({ onOpenWindow, onDownloadResume, showToolbar, o
       ] 
     },
     { 
-      label: 'View', 
+      label: 'View',
       items: [
-        { label: 'Tool Box', checked: showToolbar, action: onToggleToolbar },
-        { label: 'Color Box', checked: showColorBox, action: onToggleColorBox }, 
         { label: 'Status Bar', checked: showStatusbar, action: onToggleStatusbar },
       ] 
     },

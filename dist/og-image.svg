@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="titlebar-gradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#000080"/>
+      <stop offset="100%" stop-color="#1084d0"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#008080"/>
+  <!-- Window Frame -->
+  <rect x="120" y="60" width="960" height="510" fill="#c0c0c0" stroke="#ffffff" stroke-width="3"/>
+  <!-- Title Bar -->
+  <rect x="124" y="64" width="952" height="32" fill="url(#titlebar-gradient)"/>
+  <text x="140" y="86" font-family="Arial, sans-serif" font-size="15" fill="white" font-weight="bold">Anoir Cherif — Portfolio</text>
+  <!-- Window buttons -->
+  <rect x="1032" y="70" width="16" height="16" fill="#c0c0c0" stroke="#808080"/>
+  <rect x="1052" y="70" width="16" height="16" fill="#c0c0c0" stroke="#808080"/>
+  <!-- Content Area -->
+  <rect x="128" y="100" width="944" height="462" fill="white" stroke="#808080" stroke-width="2"/>
+  <!-- Name -->
+  <text x="600" y="260" text-anchor="middle" font-family="Arial, sans-serif" font-size="52" fill="#000080" font-weight="bold">Anoir Cherif</text>
+  <!-- Tagline -->
+  <text x="600" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#008080">Visual Creator &amp; Motion Designer</text>
+  <!-- Stats -->
+  <text x="600" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#808080">7+ Years Experience · 50+ Projects · 20+ Clients</text>
+  <!-- URL -->
+  <rect x="440" y="440" width="320" height="36" rx="0" fill="#000080"/>
+  <text x="600" y="464" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#00ffff" font-weight="bold">anoir.space</text>
+  <!-- Taskbar -->
+  <rect x="0" y="590" width="1200" height="40" fill="#c0c0c0" stroke="#ffffff" stroke-width="1"/>
+  <!-- Start Button -->
+  <rect x="8" y="596" width="80" height="28" fill="#c0c0c0" stroke="#ffffff" stroke-width="1"/>
+  <text x="48" y="615" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="black" font-weight="bold">Start</text>
+</svg>

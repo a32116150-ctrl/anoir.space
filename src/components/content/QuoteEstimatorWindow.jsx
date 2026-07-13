@@ -59,9 +59,18 @@ const PRICING = {
 
 const TIMELINE_OPTIONS = [
   { key: 'standard', label: 'Standard', desc: '4-5 days', multiplier: 1 },
-  { key: 'rush', label: 'Rush', desc: '3-5 days', multiplier: 1.3 },
-  { key: 'urgent', label: 'Urgent', desc: '1-2 days', multiplier: 1.5 },
+  { key: 'rush', label: 'Rush', desc: '3-5 days', multiplier: 1.15 },
+  { key: 'urgent', label: 'Urgent', desc: '1-2 days', multiplier: 1.25 },
+  { key: 'fastest', label: '⚡ Fastest', desc: 'ASAP', multiplier: 1.35 },
 ];
+
+const FASTEST_DELIVERY = {
+  motion: '1-2 days',
+  video: 'Same day',
+  branding: '2-4 days',
+  graphic: '1 day',
+  web: '1 day',
+};
 
 const EXTRAS = [
   { key: 'source', label: 'Source files included', multiplier: 0.15 },
@@ -184,7 +193,7 @@ export default function QuoteEstimatorWindow({ onOpenWindow }) {
 
     addRow('Service:', svc.label);
     addRow('Complexity:', `${t.label} — ${t.desc}`);
-    addRow('Timeline:', `${tl.label} — ${tl.desc}`);
+    addRow('Timeline:', `${tl.label} — ${tl.key === 'fastest' ? FASTEST_DELIVERY[service] : tl.desc}`);
     if (extrasList.length > 0) {
       addRow('Extras:', extrasList.join(', '));
     }
@@ -375,25 +384,29 @@ export default function QuoteEstimatorWindow({ onOpenWindow }) {
               className="space-y-2"
             >
               <h3 className="font-bold text-sm text-gray-900 mb-3">When do you need it?</h3>
-              {TIMELINE_OPTIONS.map(t => (
-                <button
-                  key={t.key}
-                  onClick={() => setTimeline(t.key)}
-                  className={`w-full flex items-center justify-between p-3 border text-left transition-all
-                    ${timeline === t.key
-                      ? 'bg-[#000080]/10 border-[#000080] shadow-md'
-                      : 'bg-white border-gray-300 hover:border-blue-400 hover:shadow-sm'
-                    }`}
-                >
-                  <div>
-                    <div className="font-bold text-sm">{t.label}</div>
-                    <div className="text-[11px] text-gray-500">{t.desc}</div>
-                  </div>
-                  <div className="text-xs font-bold text-gray-600">
-                    {t.multiplier === 1 ? 'Base price' : `+${Math.round((t.multiplier - 1) * 100)}%`}
-                  </div>
-                </button>
-              ))}
+              {TIMELINE_OPTIONS.map(t => {
+                const isFastest = t.key === 'fastest';
+                const desc = isFastest && service ? FASTEST_DELIVERY[service] : t.desc;
+                return (
+                  <button
+                    key={t.key}
+                    onClick={() => setTimeline(t.key)}
+                    className={`w-full flex items-center justify-between p-3 border text-left transition-all
+                      ${timeline === t.key
+                        ? 'bg-[#000080]/10 border-[#000080] shadow-md'
+                        : 'bg-white border-gray-300 hover:border-blue-400 hover:shadow-sm'
+                      }`}
+                  >
+                    <div>
+                      <div className="font-bold text-sm">{t.label}</div>
+                      <div className="text-[11px] text-gray-500">{desc}</div>
+                    </div>
+                    <div className="text-xs font-bold text-gray-600">
+                      {t.multiplier === 1 ? 'Base price' : `+${Math.round((t.multiplier - 1) * 100)}%`}
+                    </div>
+                  </button>
+                );
+              })}
             </motion.div>
           )}
 
@@ -480,7 +493,11 @@ export default function QuoteEstimatorWindow({ onOpenWindow }) {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Timeline:</span>
-                  <span className="font-bold">{TIMELINE_OPTIONS.find(t => t.key === timeline)?.label} ({TIMELINE_OPTIONS.find(t => t.key === timeline)?.desc})</span>
+                  <span className="font-bold">
+                    {TIMELINE_OPTIONS.find(t => t.key === timeline)?.label} (
+                    {timeline === 'fastest' && service ? FASTEST_DELIVERY[service] : TIMELINE_OPTIONS.find(t => t.key === timeline)?.desc}
+                    )
+                  </span>
                 </div>
                 {selectedExtras.length > 0 && (
                   <div className="flex justify-between">

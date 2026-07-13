@@ -282,7 +282,7 @@ function App() {
 
   return (
     <div
-      className="bg-win-gray min-h-screen flex flex-col overflow-hidden relative text-base"
+      className="bg-win-gray h-[100dvh] flex flex-col overflow-hidden relative text-base"
       style={{ fontFamily: font.value }}
     >
       {/* Scanline Effect */}

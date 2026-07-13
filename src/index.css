@@ -249,4 +249,8 @@ button, input, textarea, select {
   .selection-glow {
     animation: none;
   }
+  .seasonal-particle {
+    animation: none !important;
+    display: none !important;
+  }
 }

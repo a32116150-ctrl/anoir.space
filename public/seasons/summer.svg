@@ -1,0 +1,56 @@
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="summerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87ceeb;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#1e90ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#003366;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="80%" cy="12%" r="25%">
+      <stop offset="0%" style="stop-color:#fff9c4;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#ffeb3b;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#ffeb3b;stop-opacity:0" />
+    </radialGradient>
+    <filter id="heatShimmer">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="3" />
+      <feDisplacementMap in="SourceGraphic" scale="3" />
+    </filter>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#summerGrad)" />
+  <rect width="100%" height="100%" fill="url(#sunGlow)" />
+
+  <circle cx="80%" cy="12%" r="40" fill="#ffeb3b" opacity="0.95" filter="url(#heatShimmer)">
+    <animate attributeName="r" values="38;42;38" dur="4s" repeatCount="indefinite" />
+  </circle>
+
+  <circle cx="15%" cy="30%" r="1.5" fill="white" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.9;0.6" dur="3s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="55%" cy="45%" r="1" fill="white" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.85;0.5" dur="2.5s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="30%" cy="60%" r="1.2" fill="white" opacity="0.45">
+    <animate attributeName="opacity" values="0.45;0.8;0.45" dur="3.5s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="70%" cy="70%" r="1" fill="white" opacity="0.55">
+    <animate attributeName="opacity" values="0.55;0.9;0.55" dur="2.8s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="45%" cy="80%" r="1.3" fill="white" opacity="0.5">
+    <animate attributeName="opacity" values="0.5;0.85;0.5" dur="3.2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="85%" cy="50%" r="0.8" fill="white" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.75;0.4" dur="4s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="10%" cy="55%" r="1.1" fill="#fff9c4" opacity="0.35">
+    <animate attributeName="opacity" values="0.35;0.7;0.35" dur="3.8s" repeatCount="indefinite" />
+  </circle>
+
+  <line x1="80%" y1="12%" x2="95%" y2="0%" stroke="#ffeb3b" stroke-width="0.5" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.5;0.3" dur="3s" repeatCount="indefinite" />
+  </line>
+  <line x1="80%" y1="12%" x2="100%" y2="25%" stroke="#ffeb3b" stroke-width="0.5" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.5;0.3" dur="3.5s" repeatCount="indefinite" />
+  </line>
+  <line x1="80%" y1="12%" x2="65%" y2="2%" stroke="#ffeb3b" stroke-width="0.4" opacity="0.25">
+    <animate attributeName="opacity" values="0.25;0.45;0.25" dur="4s" repeatCount="indefinite" />
+  </line>
+</svg>

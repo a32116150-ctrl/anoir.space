@@ -26,6 +26,7 @@ const DesktopIcon = ({ item, onDoubleClick, onContextMenu, variant = 'desktop' }
   if (item.icon === 'process') Icon = Zap;
 
   const isDesktop = variant === 'desktop';
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const appStyles = {
     afterEffects: { bg: '#00005b', textCol: '#d2d2ff', border: '#9999ff', label: 'Ae' },
@@ -37,6 +38,9 @@ const DesktopIcon = ({ item, onDoubleClick, onContextMenu, variant = 'desktop' }
   const handleClick = (e) => {
     if (e.shiftKey) return;
     selectIcon(item.id);
+    if (isMobile) {
+      onDoubleClick(item);
+    }
   };
 
   const handleDoubleClickFn = () => {

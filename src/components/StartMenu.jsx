@@ -100,7 +100,7 @@ export default function StartMenu({ onOpenWindow, onDownloadResume, onClose, isO
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -10 }}
                           transition={{ duration: 0.1 }}
-                          className="absolute left-full bottom-0 w-[200px] bg-win-gray border-2 border-win-gray-light shadow-win-out py-1 z-[160]"
+                          className="absolute left-0 bottom-full w-[200px] bg-win-gray border-2 border-win-gray-light shadow-win-out py-1 z-[160] md:left-full md:bottom-0"
                           onMouseEnter={() => setHoveredSubmenu(item.key)}
                           onMouseLeave={() => setHoveredSubmenu(null)}
                         >

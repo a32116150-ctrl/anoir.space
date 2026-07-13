@@ -38,15 +38,11 @@ export default function Window({
   };
 
   const [position, setPosition] = useState(getInitialPosition());
-  const [isMaximized, setIsMaximized] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(isMobile);
   const [prevSize, setPrevSize] = useState({ width: initialWidth, height: initialHeight });
   const [prevPosition, setPrevPosition] = useState(getInitialPosition());
 
-  useEffect(() => {
-    if (isMobile) {
-      setSize({ width: window.innerWidth * 0.9, height: window.innerHeight * 0.7 });
-    }
-  }, [isMobile]);
+
 
   const handleMinimize = (e) => {
     e.stopPropagation();
@@ -68,6 +64,12 @@ export default function Window({
     }
   };
 
+  useEffect(() => {
+    if (isMobile && !isMaximized) {
+      setIsMaximized(true);
+    }
+  }, [isMobile]);
+
   if (!isOpen) return null;
 
   return (
@@ -84,12 +86,12 @@ export default function Window({
       style={{
         zIndex,
         position: 'fixed',
-        left: position.x,
-        top: position.y,
+        left: isMaximized ? 10 : position.x,
+        top: isMaximized ? 10 : position.y,
         width: isMaximized ? 'calc(100vw - 20px)' : size.width,
-        height: isMaximized ? 'calc(100vh - 70px)' : size.height,
+        height: isMaximized ? 'calc(100dvh - 70px)' : size.height,
       }}
-      className="bg-win-gray border-2 border-win-gray-light shadow-win-out flex flex-col min-w-[300px] max-w-[calc(100vw-10px)] max-h-[calc(100vh-70px)]"
+      className="bg-win-gray border-2 border-win-gray-light shadow-win-out flex flex-col min-w-[300px] max-w-[calc(100vw-10px)] max-h-[calc(100dvh-70px)]"
       onMouseDown={onFocus}
       onTouchStart={onFocus}
       role="dialog"

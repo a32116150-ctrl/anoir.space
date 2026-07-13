@@ -26,7 +26,7 @@ export default function Taskbar({ openWindows, activeWindowId, onWindowClick, on
       </button>
 
       {/* Window Buttons */}
-      <div className="flex-1 flex gap-1 overflow-x-auto no-scrollbar px-1 h-full items-center">
+      <div className="flex-1 flex gap-1 overflow-x-auto touch-pan-x no-scrollbar px-1 h-full items-center">
         {allWindows.map(win => {
           const isMinimized = minimizedWindows.includes(win.id);
           return (

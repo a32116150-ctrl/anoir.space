@@ -316,7 +316,7 @@ function App() {
           onClick={handleDesktopClick}
         >
           {/* Desktop Icons Layer */}
-          <div className="desktop-layer absolute top-2 left-2 grid grid-cols-2 gap-0 h-full w-max content-start z-0 pointer-events-auto">
+          <div className="desktop-layer absolute inset-2 flex flex-col flex-wrap gap-2 content-start z-0 pointer-events-auto overflow-auto">
             {desktopItems.map(item => (
               <DesktopIcon
                 key={item.id}

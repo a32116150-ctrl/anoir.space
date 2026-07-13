@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Monitor, Type, Check } from 'lucide-react';
+import { Monitor, Type, Check, Sparkles, Sun } from 'lucide-react';
 import { WALLPAPERS, FONTS } from '../../data/settings';
 
 // Re-export for backward compatibility
 export { WALLPAPERS, FONTS };
 
-export default function SettingsWindow({ currentWallpaper, onWallpaperChange, currentFont, onFontChange }) {
+export default function SettingsWindow({ currentWallpaper, onWallpaperChange, currentFont, onFontChange, holidayEnabled, onToggleHoliday, activeHoliday, seasonalEnabled, onToggleSeasonal, activeSeason }) {
   // Local state for preview
   const [selectedWallpaper, setSelectedWallpaper] = useState(currentWallpaper);
   const [selectedFont, setSelectedFont] = useState(currentFont);
@@ -64,6 +64,68 @@ export default function SettingsWindow({ currentWallpaper, onWallpaperChange, cu
                             {wp.name}
                         </div>
                     ))}
+                </div>
+            </fieldset>
+
+            {/* Holiday Theme Section */}
+            <fieldset className="border border-white shadow-win-in p-2 flex-shrink-0">
+                <legend className="text-sm px-1 flex items-center gap-1">
+                    <Sparkles size={12} /> Holiday Theme
+                </legend>
+                <div className="bg-white border-2 border-gray-400 shadow-inner p-3">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-bold">Auto-apply holiday themes</span>
+                        <button
+                            onClick={onToggleHoliday}
+                            className={`w-12 h-6 rounded-full transition-colors relative ${
+                                holidayEnabled ? 'bg-[#000080]' : 'bg-gray-400'
+                            }`}
+                        >
+                            <div className={`w-5 h-5 bg-white rounded-full shadow absolute top-0.5 transition-transform ${
+                                holidayEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                            }`} />
+                        </button>
+                    </div>
+                    {activeHoliday && holidayEnabled && (
+                        <div className="bg-[#000080]/5 border border-[#000080]/20 p-2 text-xs">
+                            <span className="font-bold">{activeHoliday.icon} {activeHoliday.name}</span>
+                            <span className="text-gray-500 ml-1">theme active</span>
+                        </div>
+                    )}
+                    {!activeHoliday && holidayEnabled && (
+                        <p className="text-[10px] text-gray-400 italic">No holiday today — default theme active</p>
+                    )}
+                </div>
+            </fieldset>
+
+            {/* Seasonal Theme Section */}
+            <fieldset className="border border-white shadow-win-in p-2 flex-shrink-0">
+                <legend className="text-sm px-1 flex items-center gap-1">
+                    <Sun size={12} /> Seasonal Theme
+                </legend>
+                <div className="bg-white border-2 border-gray-400 shadow-inner p-3">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-bold">Auto-apply seasonal themes</span>
+                        <button
+                            onClick={onToggleSeasonal}
+                            className={`w-12 h-6 rounded-full transition-colors relative ${
+                                seasonalEnabled ? 'bg-[#000080]' : 'bg-gray-400'
+                            }`}
+                        >
+                            <div className={`w-5 h-5 bg-white rounded-full shadow absolute top-0.5 transition-transform ${
+                                seasonalEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                            }`} />
+                        </button>
+                    </div>
+                    {activeSeason && seasonalEnabled && (
+                        <div className="bg-[#000080]/5 border border-[#000080]/20 p-2 text-xs">
+                            <span className="font-bold">{activeSeason.icon} {activeSeason.name}</span>
+                            <span className="text-gray-500 ml-1">theme active</span>
+                        </div>
+                    )}
+                    {!activeSeason && seasonalEnabled && (
+                        <p className="text-[10px] text-gray-400 italic">No seasonal theme active</p>
+                    )}
                 </div>
             </fieldset>
 

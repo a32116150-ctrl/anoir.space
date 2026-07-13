@@ -82,7 +82,7 @@ const DesktopIcon = ({ item, onDoubleClick, onContextMenu, variant = 'desktop' }
     return (
       <>
         <div
-          className={`flex flex-col items-center gap-1 p-2 w-24 md:w-28 min-h-[80px] md:min-h-0 cursor-pointer rounded-sm transition-all duration-75
+          className={`flex flex-col items-center gap-1 p-2 w-24 md:w-28 min-h-[80px] md:min-h-0 cursor-pointer rounded-sm transition-all duration-75 select-none
             ${isSelected && isDesktop ? 'bg-[#000080]/30 outline outline-1 outline-dashed outline-white selection-glow' : 'hover:bg-blue-800/20'}
             ${isFlashing ? 'icon-flash' : ''}
             ${!isDesktop ? 'border border-transparent hover:border-blue-300' : ''}
@@ -117,7 +117,7 @@ const DesktopIcon = ({ item, onDoubleClick, onContextMenu, variant = 'desktop' }
   return (
     <>
       <div
-        className={`flex flex-col items-center gap-1 p-2 w-24 md:w-28 min-h-[80px] md:min-h-0 cursor-pointer rounded-sm transition-all duration-75
+        className={`flex flex-col items-center gap-1 p-2 w-24 md:w-28 min-h-[80px] md:min-h-0 cursor-pointer rounded-sm transition-all duration-75 select-none
           ${isSelected && isDesktop ? 'bg-[#000080]/30 outline outline-1 outline-dashed outline-white selection-glow' : 'hover:bg-blue-800/20'}
           ${isFlashing ? 'icon-flash' : ''}
           ${!isDesktop ? 'border border-transparent hover:border-blue-300' : ''}
@@ -131,14 +131,15 @@ const DesktopIcon = ({ item, onDoubleClick, onContextMenu, variant = 'desktop' }
       >
         <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center">
           {item.icon === 'folder' ? (
-            <Icon size={40} className="text-yellow-400 drop-shadow-sm md:hidden" />
-          ) : item.icon === 'folder' ? (
-            <Icon size={48} className="text-yellow-400 drop-shadow-sm hidden md:block" />
+            <>
+              <Icon size={40} className="text-yellow-400 drop-shadow-sm md:hidden" />
+              <Icon size={48} className="text-yellow-400 drop-shadow-sm hidden md:block" />
+            </>
           ) : (
-            <Icon size={40} className={`${isDesktop ? 'text-white' : 'text-win-blue'} drop-shadow-sm md:hidden`} />
-          )}
-          {item.icon !== 'folder' && (
-            <Icon size={48} className={`${isDesktop ? 'text-white' : 'text-win-blue'} drop-shadow-sm hidden md:block`} />
+            <>
+              <Icon size={40} className={`${isDesktop ? 'text-white' : 'text-win-blue'} drop-shadow-sm md:hidden`} />
+              <Icon size={48} className={`${isDesktop ? 'text-white' : 'text-win-blue'} drop-shadow-sm hidden md:block`} />
+            </>
           )}
         </div>
         <span className={`text-[11px] md:text-xs text-center leading-tight px-1 rounded break-words w-full line-clamp-2

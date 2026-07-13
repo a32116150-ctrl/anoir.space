@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { motion, useDragControls } from 'framer-motion';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { motion, useDragControls, useAnimation } from 'framer-motion';
 import { Minus, Square, X } from 'lucide-react';
 import { useSystem } from '../context/SystemContext';
 
@@ -18,19 +18,14 @@ export default function Window({
 }) {
   const dragControls = useDragControls();
   const windowRef = useRef(null);
+  const controls = useAnimation();
   const { minimizeWindow } = useSystem();
 
   const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
-  // Center the window on the screen by default
   const getInitialPosition = () => {
-    // Default fallback values if window is not available
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
     const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
-    
-    // Calculate centered position
-    // We add a little random offset so multiple windows don't stack exactly on top of each other
     const randomOffset = Math.random() * 20 - 10;
-    
     return {
       x: Math.max(10, (vw - initialWidth) / 2) + randomOffset,
       y: Math.max(10, (vh - initialHeight) / 2) + randomOffset
@@ -41,15 +36,19 @@ export default function Window({
   const [isMaximized, setIsMaximized] = useState(isMobile);
   const [prevSize, setPrevSize] = useState({ width: initialWidth, height: initialHeight });
   const [prevPosition, setPrevPosition] = useState(getInitialPosition());
+  const [isDragging, setIsDragging] = useState(false);
+  const [isMinimizing, setIsMinimizing] = useState(false);
 
-
-
-  const handleMinimize = (e) => {
+  const handleMinimize = useCallback((e) => {
     e.stopPropagation();
-    minimizeWindow(id);
-  };
+    setIsMinimizing(true);
+    setTimeout(() => {
+      minimizeWindow(id);
+      setIsMinimizing(false);
+    }, 200);
+  }, [id, minimizeWindow]);
 
-  const handleMaximize = (e) => {
+  const handleMaximize = useCallback((e) => {
     e.stopPropagation();
     if (isMaximized) {
       setSize(prevSize);
@@ -62,7 +61,20 @@ export default function Window({
       setPosition({ x: 0, y: 0 });
       setIsMaximized(true);
     }
-  };
+  }, [isMaximized, prevSize, prevPosition, size, position]);
+
+  const handleDragEnd = useCallback((event, info) => {
+    setIsDragging(false);
+    if (isMaximized) return;
+    const vw = window.innerWidth;
+    const threshold = 40;
+    let newPos = { ...position };
+    newPos.x += info.offset.x;
+    newPos.y += info.offset.y;
+    newPos.x = Math.max(0, Math.min(newPos.x, vw - size.width));
+    newPos.y = Math.max(0, Math.min(newPos.y, window.innerHeight - 60));
+    setPosition(newPos);
+  }, [isMaximized, position, size]);
 
   useEffect(() => {
     if (isMobile && !isMaximized) {
@@ -79,10 +91,18 @@ export default function Window({
       dragListener={false}
       dragControls={dragControls}
       dragMomentum={false}
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.9, opacity: 0 }}
-      transition={{ duration: 0.12, ease: 'easeOut' }}
+      onDragStart={() => setIsDragging(true)}
+      onDragEnd={handleDragEnd}
+      initial={{ scale: 0.85, opacity: 0 }}
+      animate={isMinimizing
+        ? { scale: 0.3, opacity: 0, y: 200 }
+        : { scale: 1, opacity: 1, y: 0 }
+      }
+      exit={{ scale: 0.85, opacity: 0 }}
+      transition={isMinimizing
+        ? { duration: 0.2, ease: 'easeIn' }
+        : { type: 'spring', stiffness: 400, damping: 30 }
+      }
       style={{
         zIndex,
         position: 'fixed',
@@ -91,7 +111,13 @@ export default function Window({
         width: isMaximized ? '100vw' : size.width,
         height: isMaximized ? 'calc(100dvh - 48px)' : size.height,
       }}
-      className="bg-win-gray border-2 border-win-gray-light shadow-win-out flex flex-col min-w-[300px] max-w-[100vw] max-h-[calc(100dvh-48px)]"
+      className={`bg-win-gray flex flex-col min-w-[300px] max-w-[100vw] max-h-[calc(100dvh-48px)] select-none
+        ${isActive
+          ? 'win95-border-out shadow-[4px_4px_0_0_rgba(0,0,0,0.3),0_0_12px_2px_rgba(0,0,128,0.15)]'
+          : 'border-2 border-win-gray-light shadow-[2px_2px_0_0_rgba(0,0,0,0.15)]'
+        }
+        ${isDragging ? 'opacity-90' : ''}
+      `}
       onMouseDown={onFocus}
       onTouchStart={onFocus}
       role="dialog"
@@ -100,13 +126,17 @@ export default function Window({
       {/* Title Bar */}
       <div
         onPointerDown={(e) => {
-          if (!isMaximized) dragControls.start(e);
+          if (!isMaximized) {
+            dragControls.start(e);
+          }
         }}
         className={`px-1.5 py-1 flex justify-between items-center select-none cursor-default shrink-0
           ${isActive
             ? 'bg-gradient-to-r from-[#000080] to-[#1084d0] text-white'
-            : 'bg-gradient-to-r from-[#808080] to-[#b4b4b4] text-gray-200'
-          }`}
+            : 'bg-gradient-to-r from-[#808080] to-[#a0a0a0] text-gray-300'
+          }
+          ${isDragging ? 'opacity-80' : ''}
+        `}
         style={{ touchAction: 'none' }}
       >
         <div className="flex items-center gap-1.5 truncate mr-2">
@@ -116,32 +146,32 @@ export default function Window({
           <span className="font-sans text-xs font-bold truncate">{title}</span>
         </div>
 
-        <div className="flex gap-1 shrink-0">
+        <div className="flex gap-0.5 shrink-0">
           <button
             onClick={handleMinimize}
             aria-label="Minimize"
-            className="w-6 h-6 bg-[#c0c0c0] border-t border-l border-white border-b border-r border-[#808080] shadow-win-out active:shadow-win-in flex items-center justify-center hover:bg-gray-300 focus:outline-none"
+            className="w-5 h-5 md:w-6 md:h-6 bg-[#c0c0c0] win95-btn flex items-center justify-center hover:brightness-105 focus:outline-none"
           >
-            <Minus size={14} strokeWidth={3} className="text-black" />
+            <Minus size={12} strokeWidth={3} className="text-black" />
           </button>
           <button
             onClick={handleMaximize}
             aria-label="Maximize"
-            className="w-6 h-6 bg-[#c0c0c0] border-t border-l border-white border-b border-r border-[#808080] shadow-win-out active:shadow-win-in flex items-center justify-center hover:bg-gray-300 focus:outline-none"
+            className="w-5 h-5 md:w-6 md:h-6 bg-[#c0c0c0] win95-btn flex items-center justify-center hover:brightness-105 focus:outline-none"
           >
-            <Square size={12} strokeWidth={2.5} className="text-black" />
+            <Square size={10} strokeWidth={2.5} className="text-black" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onClose(); }}
             aria-label="Close"
-            className="w-6 h-6 bg-[#c0c0c0] border-t border-l border-white border-b border-r border-[#808080] shadow-win-out active:shadow-win-in flex items-center justify-center hover:bg-gray-300 focus:outline-none"
+            className="w-5 h-5 md:w-6 md:h-6 bg-[#c0c0c0] win95-btn flex items-center justify-center hover:brightness-105 focus:outline-none"
           >
-            <X size={14} strokeWidth={3} className="text-black" />
+            <X size={12} strokeWidth={3} className="text-black" />
           </button>
         </div>
       </div>
 
-      {/* Menu bar placeholder */}
+      {/* Menu bar */}
       <div className="h-5 bg-[#c0c0c0] border-b border-[#808080] flex items-center px-1 text-xs font-sans gap-2 select-none">
         <span className="px-1.5 hover:bg-[#000080] hover:text-white cursor-default">File</span>
         <span className="px-1.5 hover:bg-[#000080] hover:text-white cursor-default">Edit</span>

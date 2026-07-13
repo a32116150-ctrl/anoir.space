@@ -83,7 +83,7 @@ export default function StartMenu({ onOpenWindow, onDownloadResume, onClose, isO
                     onMouseLeave={() => setHoveredSubmenu(null)}
                   >
                     <button
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-win-blue hover:text-white group justify-between"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-win-blue hover:text-white group justify-between transition-colors duration-75"
                     >
                       <div className="flex items-center gap-2">
                         <item.icon size={18} className="shrink-0" />
@@ -109,7 +109,7 @@ export default function StartMenu({ onOpenWindow, onDownloadResume, onClose, isO
                               key={i}
                               onClick={() => { subItem.action(); onClose(); }}
                               disabled={subItem.disabled}
-                              className={`w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-win-blue hover:text-white group disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-inherit ${
+                              className={`w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-win-blue hover:text-white group disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-inherit transition-colors duration-75 ${
                                 subItem.highlight ? 'font-extrabold' : ''
                               }`}
                             >
@@ -131,7 +131,7 @@ export default function StartMenu({ onOpenWindow, onDownloadResume, onClose, isO
                     key={i}
                     onClick={() => { item.action(); onClose(); }}
                     disabled={item.disabled}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-win-blue hover:text-white group disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-inherit"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-win-blue hover:text-white group disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-inherit transition-colors duration-75"
                   >
                     <item.icon size={18} className="shrink-0" />
                     <span className="font-sans font-bold text-xs">{item.label}</span>

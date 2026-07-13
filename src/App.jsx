@@ -274,6 +274,25 @@ function App() {
     }
   }, [deselectAll]);
 
+  // Cursor trail effect (desktop only)
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.innerWidth < 768) return;
+    let lastTime = 0;
+    const handleMouseMove = (e) => {
+      const now = Date.now();
+      if (now - lastTime < 40) return;
+      lastTime = now;
+      const dot = document.createElement('div');
+      dot.className = 'cursor-trail-dot';
+      dot.style.left = `${e.clientX - 3}px`;
+      dot.style.top = `${e.clientY - 3}px`;
+      document.body.appendChild(dot);
+      setTimeout(() => dot.remove(), 400);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   // Show boot screen
   if (isBooting) {
     return <BootScreen onComplete={handleBootComplete} />;
@@ -281,7 +300,7 @@ function App() {
 
   return (
     <div
-      className="bg-win-gray h-[100dvh] flex flex-col overflow-hidden relative text-base"
+      className="bg-win-gray h-[100dvh] flex flex-col overflow-hidden relative text-base crt-effect"
       style={{ fontFamily: font.value }}
     >
       {/* Scanline Effect */}

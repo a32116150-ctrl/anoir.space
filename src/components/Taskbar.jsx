@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTime } from '../hooks/useTime';
 import { Monitor, Volume2, Wifi, Mail } from 'lucide-react';
 import { useSystem } from '../context/SystemContext';
@@ -9,15 +9,23 @@ export default function Taskbar({ openWindows, activeWindowId, onWindowClick, on
   const { minimizedWindows, restoreWindow } = useSystem();
   const [showNotification, setShowNotification] = useState(false);
   const [notificationDismissed, setNotificationDismissed] = useState(false);
+  const [hoveredBtn, setHoveredBtn] = useState(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   const allWindows = openWindows.filter(w => w.id !== 'settings');
 
+  const handleBtnHover = useCallback((e, winId) => {
+    if (window.innerWidth < 768) return;
+    setHoveredBtn(winId);
+    setTooltipPos({ x: e.clientX, y: e.clientY - 30 });
+  }, []);
+
   return (
-    <div className="h-12 bg-[#c0c0c0] border-t-2 border-white flex items-center px-2 fixed bottom-0 left-0 right-0 z-[100] select-none shadow-[0_-2px_0_0_#808080]">
+    <div className="h-12 bg-[#c0c0c0] border-t-2 border-white flex items-center px-2 fixed bottom-0 left-0 right-0 z-[100] select-none shadow-[0_-2px_0_0_#808080] safe-area-bottom">
       {/* Start Button */}
       <button
         onClick={onStartClick}
-        className="flex items-center gap-2 px-3 py-1.5 bg-[#c0c0c0] border-t-2 border-l-2 border-white border-b-2 border-r-2 border-b-[#808080] border-r-[#808080] shadow-win-out active:shadow-win-in font-bold mr-2 hover:bg-gray-300 transition-colors"
+        className="win95-btn flex items-center gap-2 px-3 py-1.5 font-bold mr-2 hover:bg-gray-300"
       >
         <div className="w-5 h-5 bg-[#008080] border border-white/50 rounded-sm flex items-center justify-center">
           <div className="w-3 h-3 bg-[#00ffff] opacity-80 rounded-[1px]"></div>
@@ -29,6 +37,7 @@ export default function Taskbar({ openWindows, activeWindowId, onWindowClick, on
       <div className="flex-1 flex gap-1 overflow-x-auto touch-pan-x no-scrollbar px-1 h-full items-center">
         {allWindows.map(win => {
           const isMinimized = minimizedWindows.includes(win.id);
+          const isActive = activeWindowId === win.id && !isMinimized;
           return (
             <button
               key={win.id}
@@ -36,11 +45,16 @@ export default function Taskbar({ openWindows, activeWindowId, onWindowClick, on
                 if (isMinimized) restoreWindow(win.id);
                 onWindowClick(win.id);
               }}
-              className={`flex items-center gap-2 px-3 py-1 min-w-[100px] max-w-[180px] text-sm font-bold h-8
-                ${activeWindowId === win.id && !isMinimized
-                  ? 'bg-[#c0c0c0] border-2 border-t-[#808080] border-l-[#808080] border-b-white border-r-white shadow-[inset_1px_1px_0_0_#808080]'
-                  : 'bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-[#808080] border-r-[#808080] shadow-win-out'
-                } ${isMinimized ? 'opacity-70' : ''}`}
+              onMouseEnter={(e) => handleBtnHover(e, win.id)}
+              onMouseMove={(e) => {
+                if (hoveredBtn === win.id) setTooltipPos({ x: e.clientX, y: e.clientY - 30 });
+              }}
+              onMouseLeave={() => setHoveredBtn(null)}
+              className={`flex items-center gap-2 px-3 py-1 min-w-[100px] max-w-[180px] text-sm font-bold h-8 transition-none
+                ${isActive
+                  ? 'taskbar-btn-active'
+                  : 'taskbar-btn-inactive'
+                } ${isMinimized ? 'opacity-60' : ''}`}
             >
               <span className="truncate text-xs">{win.title}</span>
             </button>
@@ -75,7 +89,7 @@ export default function Taskbar({ openWindows, activeWindowId, onWindowClick, on
                 exit={{ opacity: 0, y: 5, scale: 0.95 }}
                 className="absolute bottom-12 right-0 w-60 bg-[#ffffcc] border-2 border-gray-600 shadow-lg p-3 z-[200]"
               >
-                <div className="text-xs text-gray-500 mb-1 font-bold">💡 New Message</div>
+                <div className="text-xs text-gray-500 mb-1 font-bold">New Message</div>
                 <p className="text-sm text-gray-800 leading-relaxed">
                   Interested in working together? I'm available for freelance & full-time opportunities!
                 </p>
@@ -86,7 +100,7 @@ export default function Taskbar({ openWindows, activeWindowId, onWindowClick, on
                       setShowNotification(false);
                       setNotificationDismissed(true);
                     }}
-                    className="text-xs px-3 py-1 bg-[#000080] text-white border border-[#000080] hover:bg-[#0000a0] font-bold"
+                    className="win95-btn text-xs px-3 py-1 bg-[#000080] text-white hover:bg-[#0000a0] font-bold"
                   >
                     Contact Me
                   </button>
@@ -95,7 +109,7 @@ export default function Taskbar({ openWindows, activeWindowId, onWindowClick, on
                       setShowNotification(false);
                       setNotificationDismissed(true);
                     }}
-                    className="text-xs px-3 py-1 bg-gray-200 border border-gray-400 hover:bg-gray-300 font-bold"
+                    className="win95-btn text-xs px-3 py-1 font-bold"
                   >
                     Dismiss
                   </button>
@@ -114,6 +128,13 @@ export default function Taskbar({ openWindows, activeWindowId, onWindowClick, on
           {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
       </div>
+
+      {/* Tooltip */}
+      {hoveredBtn && (
+        <div className="win95-tooltip" style={{ left: tooltipPos.x, top: tooltipPos.y }}>
+          {allWindows.find(w => w.id === hoveredBtn)?.title}
+        </div>
+      )}
     </div>
   );
 }

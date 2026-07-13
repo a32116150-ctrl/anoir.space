@@ -1,4 +1,4 @@
-# 🤖 OpenCode Agent Instructions — anoir.space Million-Dollar Portfolio Transformation
+# anoir.space — Portfolio Upgrade Instructions
 
 > **IMPORTANT**: This document is a complete, self-contained guide for an AI coding agent to transform the anoir.space portfolio website. Execute tasks in the order listed (P0 → P1 → P2 → P3). Each task includes exact file paths, code changes, and verification steps.
 
@@ -729,12 +729,91 @@ Update `alt` text to be more descriptive.
 ---
 
 # ═══════════════════════════════════════════
-# PHASE 3 (P3) — PREMIUM POLISH
+# PHASE 3 (P3) — UI/UX POLISH (COMPLETED)
 # ═══════════════════════════════════════════
 
 ---
 
-## TASK P3-1: Clippy Easter Egg
+## TASK P3-1: Window Visual Polish — COMPLETED
+
+### Changes made to `src/components/Window.jsx`:
+- **Layered 3D shadows**: Active windows get `win95-border-out` with `shadow-[4px_4px_0_0_rgba(0,0,0,0.3)]` for depth
+- **Active window glow**: Inactive windows get subtle shadow, active windows get cyan glow `shadow-[0_0_12px_2px_rgba(0,0,128,0.15)]`
+- **Spring animation**: Window open/close uses `type: 'spring', stiffness: 400, damping: 30` for satisfying overshoot
+- **Minimize animation**: Windows animate `scale(0.3) + translateY(200px)` with `easeIn` over 200ms
+- **Drag feedback**: Window opacity drops to 0.9 while dragging for visual feedback
+- **Win95 button style**: All title bar buttons use `.win95-btn` class with authentic 3D border effect
+- **Responsive touch targets**: Buttons are `w-5 h-5` on mobile, `w-6 h-6` on desktop
+
+---
+
+## TASK P3-2: Desktop Icon Polish — COMPLETED
+
+### Changes made to `src/components/DesktopIcon.jsx`:
+- **Double-click flash**: Icons flash blue (`icon-flash` animation) on open for Win95 authenticity
+- **Selection glow**: Selected icons pulse with `selection-glow` animation
+- **Tooltip on hover**: Win95-style yellow tooltip follows cursor on desktop (hidden on mobile)
+- **Larger touch targets**: Icons are `w-24 min-h-[80px]` on mobile, `w-28` on desktop
+- **Smooth hover**: `transition-all duration-75` for subtle hover feedback
+
+---
+
+## TASK P3-3: Taskbar Polish — COMPLETED
+
+### Changes made to `src/components/Taskbar.jsx`:
+- **Active button "pressed in"**: Uses `.taskbar-btn-active` class with inset border/shadow
+- **Inactive button 3D**: Uses `.taskbar-btn-inactive` class with raised border
+- **Tooltip on hover**: Window title tooltip appears above taskbar buttons
+- **Start button**: Uses `.win95-btn` class for authentic 3D press effect
+- **Safe area**: Bottom padding for iPhone notch/Dynamic Island
+- **Mobile notification**: Win95-styled buttons in notification popup
+
+---
+
+## TASK P3-4: Start Menu Polish — COMPLETED
+
+### Changes made to `src/components/StartMenu.jsx`:
+- **Hover transitions**: `transition-colors duration-75` on all menu items for smooth feedback
+- **Submenu positioning**: Opens upward (`bottom-full`) on mobile, right (`left-full`) on desktop
+
+---
+
+## TASK P3-5: Context Menu Polish — COMPLETED
+
+### Changes made to `src/components/ContextMenu.jsx`:
+- **Authentic scale-in**: `scale: 0.92 → 1` over 120ms for Win95 feel
+- **3D border**: Uses `.win95-border-out` class with layered shadow
+- **Hover transition**: `transition-colors duration-75` on menu items
+- **Larger padding**: `py-1.5` for better click targets
+
+---
+
+## TASK P3-6: Global CSS Polish — COMPLETED
+
+### Changes made to `src/index.css`:
+- **CRT scanline effect**: Subtle horizontal lines via `::before` pseudo-element on `.crt-effect`
+- **Cursor trail**: Cyan pixelated cursor trail dots that fade out (desktop only)
+- **Window animations**: `window-open` spring, `window-minimize` shrink, `icon-flash` blue flash
+- **Selection glow**: Pulsing blue outline for selected icons
+- **Win95 tooltips**: Yellow background, black border, pixel font styling
+- **3D button classes**: `.win95-btn` with authentic border colors and active state
+- **3D border classes**: `.win95-border-out` and `.win95-border-in` for window frames
+- **Taskbar button classes**: `.taskbar-btn-active` (pressed) and `.taskbar-btn-inactive` (raised)
+- **Safe area support**: `@supports` block for iPhone notch padding
+- **Reduced motion**: All animations disabled when `prefers-reduced-motion: reduce`
+
+---
+
+## TASK P3-7: App-Level Polish — COMPLETED
+
+### Changes made to `src/App.jsx`:
+- **Cursor trail effect**: Desktop-only cyan cursor trail (40ms throttle, 400ms fade)
+- **CRT overlay**: Main container uses `.crt-effect` class for scanline overlay
+- **Reduced motion**: Cursor trail and selection glow disabled for accessibility
+
+---
+
+## TASK P3-8: Clippy Easter Egg
 
 ### Step 1: Create `src/components/Clippy.jsx`
 A paperclip assistant that appears after 30 seconds with random portfolio tips.
@@ -744,12 +823,62 @@ Auto-dismisses after 12 seconds. Has "Thanks!" and "Don't show again" buttons.
 
 ---
 
-## TASK P3-2: Konami Code Easter Egg
+## TASK P3-9: Konami Code Easter Egg
 
 ### Step 1: Add keydown listener in App.jsx
 Listen for ↑↑↓↓←→←→BA sequence, then trigger confetti particles.
 
 ### Step 2: Add `@keyframes confetti-fall` animation to `src/index.css`
+
+---
+
+# ═══════════════════════════════════════════
+# PHASE 4 (P4) — MOBILE UX (COMPLETED)
+# ═══════════════════════════════════════════
+
+---
+
+## TASK P4-1: Auto-Maximize Windows on Mobile — COMPLETED
+
+### Changes made to `src/components/Window.jsx`:
+- `isMaximized` initializes to `isMobile` (true on phones)
+- `useEffect` force-maximizes if `isMobile` changes to true
+- Maximized windows: `top: 0, left: 0, width: 100vw, height: calc(100dvh - 48px)`
+- Removed conflicting `useEffect` that was setting 90%/70% size
+
+---
+
+## TASK P4-2: Single-Tap Icons on Mobile — COMPLETED
+
+### Changes made to `src/components/DesktopIcon.jsx`:
+- Mobile detection via `window.innerWidth < 768`
+- Single tap opens window on mobile (bypasses double-click requirement)
+- Double-click flash animation on both mobile and desktop
+
+---
+
+## TASK P4-3: Start Menu Submenu Overflow — COMPLETED
+
+### Changes made to `src/components/StartMenu.jsx`:
+- Mobile: submenu opens upward (`bottom-full, left-0`) to stay visible
+- Desktop: submenu opens right (`left-full, bottom-0`) as before
+- Uses `md:` Tailwind prefix for responsive breakpoint
+
+---
+
+## TASK P4-4: Taskbar Touch Scroll — COMPLETED
+
+### Changes made to `src/components/Taskbar.jsx`:
+- Added `touch-pan-x` for smooth horizontal swiping on mobile
+- `no-scrollbar` class hides scrollbars cleanly
+
+---
+
+## TASK P4-5: Top Menu Bar Removed — COMPLETED
+
+### Changes made to `src/App.jsx`:
+- Removed `<MenuBar>` component import and render
+- Desktop now fills full viewport height
 
 ---
 
@@ -781,6 +910,26 @@ npm run preview
 - [ ] No console errors in production build
 - [ ] npm run build output shows separate vendor chunks
 
+### UI/UX Checks:
+- [ ] Active windows have blue glow border, inactive windows are muted
+- [ ] Window open animation has spring overshoot feel
+- [ ] Window minimize animates shrinking down
+- [ ] Dragging a window reduces opacity slightly
+- [ ] Title bar buttons have 3D press effect (border inverts on click)
+- [ ] Desktop icons flash blue on double-click
+- [ ] Selected desktop icons have pulsing glow outline
+- [ ] Hovering desktop icons shows yellow Win95 tooltip
+- [ ] Taskbar buttons show "pressed in" for active window
+- [ ] Taskbar buttons show tooltip with window title on hover
+- [ ] Context menu scales in with authentic Win95 timing
+- [ ] Start menu items have smooth color transition on hover
+- [ ] Cursor trail (cyan dots) follows mouse on desktop
+- [ ] CRT scanline overlay is subtle but visible
+- [ ] Mobile: windows auto-maximize with title bar visible
+- [ ] Mobile: single tap opens icons
+- [ ] Mobile: Start menu submenus don't overflow off-screen
+- [ ] Mobile: taskbar scrolls horizontally with touch
+
 ---
 
 ## File Summary
@@ -788,9 +937,13 @@ npm run preview
 | Action | File | Description |
 |---|---|---|
 | MODIFY | `index.html` | Favicon, OG image, DNS prefetch, structured data |
-| MODIFY | `src/App.jsx` | Lazy loading, error boundaries, keyboard shortcuts, Clippy, Konami |
-| MODIFY | `src/index.css` | Reduced motion, confetti animation |
-| MODIFY | `src/components/Window.jsx` | ARIA labels, role="dialog" |
+| MODIFY | `src/App.jsx` | Lazy loading, error boundaries, keyboard shortcuts, Clippy, Konami, cursor trail, CRT |
+| MODIFY | `src/index.css` | Animations, CRT effect, cursor trail, Win95 classes, safe areas, reduced motion |
+| MODIFY | `src/components/Window.jsx` | 3D shadows, active glow, spring animation, minimize anim, drag feedback |
+| MODIFY | `src/components/DesktopIcon.jsx` | Flash, glow, tooltip, responsive touch targets |
+| MODIFY | `src/components/Taskbar.jsx` | Active button glow, tooltip, safe area |
+| MODIFY | `src/components/StartMenu.jsx` | Hover transitions, responsive submenu |
+| MODIFY | `src/components/ContextMenu.jsx` | Authentic scale-in, 3D border |
 | MODIFY | `src/components/content/ContactWindow.jsx` | Full rewrite — form, tabs, availability |
 | MODIFY | `src/components/content/ServicesWindow.jsx` | Full rewrite — expandable cards, CTAs |
 | MODIFY | `src/components/content/ExperienceWindow.jsx` | Remove window.prompt/confirm |

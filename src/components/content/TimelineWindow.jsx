@@ -93,10 +93,9 @@ export default function TimelineWindow() {
   const getSectionEntries = () => {
     if (activeSection === 'all') {
       const entries = [];
-      // Current first, then past, then branding
-      experience.current.forEach(e => entries.push({ ...e, section: 'current' }));
-      experience.past.forEach(e => entries.push({ ...e, section: 'past' }));
-      experience.branding.forEach(e => entries.push({ ...e, section: 'branding' }));
+      experience.current?.forEach(e => entries.push({ ...e, section: 'current' }));
+      experience.past?.forEach(e => entries.push({ ...e, section: 'past' }));
+      experience.branding?.forEach(e => entries.push({ ...e, section: 'branding' }));
       return entries;
     }
     return experience[activeSection]?.map(e => ({ ...e, section: activeSection })) || [];

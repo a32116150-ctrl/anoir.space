@@ -58,8 +58,8 @@ const PRICING = {
 
 const TIMELINE_OPTIONS = [
   { key: 'standard', label: 'Standard', desc: '2-4 weeks', multiplier: 1 },
-  { key: 'rush', label: 'Rush', desc: '1 week', multiplier: 1.3 },
-  { key: 'urgent', label: 'Urgent', desc: '3-5 days', multiplier: 1.5 },
+  { key: 'rush', label: 'Rush', desc: '3-5 days', multiplier: 1.3 },
+  { key: 'urgent', label: 'Urgent', desc: '1-2 days', multiplier: 1.5 },
 ];
 
 const EXTRAS = [

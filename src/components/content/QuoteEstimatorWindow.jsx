@@ -55,6 +55,16 @@ const PRICING = {
       complex: { label: 'Complex', desc: 'Full web app, e-commerce, complex interactions', base: [4000, 8000] },
     },
   },
+  ai: {
+    label: 'AI Content',
+    description: 'AI-generated ads, product images, videos, visuals',
+    icon: '🤖',
+    tiers: {
+      simple: { label: 'Simple', desc: '1-3 AI images or short clip', base: [200, 500] },
+      standard: { label: 'Standard', desc: 'Pack of AI visuals + product shots', base: [500, 1500] },
+      complex: { label: 'Complex', desc: 'Full AI campaign — ads, videos, images, product shots', base: [1500, 3500] },
+    },
+  },
 };
 
 const TIMELINE_OPTIONS = [
@@ -70,6 +80,7 @@ const FASTEST_DELIVERY = {
   branding: '2-4 days',
   graphic: '1 day',
   web: '1 day',
+  ai: 'Same day',
 };
 
 const EXTRAS = [

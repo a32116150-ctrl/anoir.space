@@ -12,6 +12,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Clippy from './components/Clippy';
 import { useSystem } from './context/SystemContext';
 import { WALLPAPERS, FONTS } from './data/settings';
+import { useHolidayTheme } from './hooks/useHolidayTheme';
+import { useSeasonalTheme } from './hooks/useSeasonalTheme';
+import SeasonalEffect from './components/effects/SeasonalEffect';
 
 // Eagerly loaded (needed immediately after boot)
 import AboutWindow from './components/content/AboutWindow';
@@ -86,6 +89,18 @@ function App() {
   const [wallpaper, setWallpaper] = useState(WALLPAPERS[0]);
   const [font, setFont] = useState(FONTS[0]);
   const [showStatusbar, setShowStatusbar] = useState(true);
+
+  // Holiday theme
+  const { enabled: holidayEnabled, toggleEnabled: toggleHoliday, activeHoliday, shouldApply: holidayActive } = useHolidayTheme();
+
+  // Seasonal theme
+  const { enabled: seasonalEnabled, toggleEnabled: toggleSeasonal, activeSeason, shouldApply: seasonalActive } = useSeasonalTheme();
+
+  // Use holiday wallpaper when active, then seasonal, otherwise user's choice
+  const effectiveWallpaper = 
+    holidayActive && activeHoliday ? activeHoliday.wallpaper :
+    seasonalActive && activeSeason ? activeSeason.wallpaper :
+    wallpaper;
 
   // Boot & Welcome states
   const [isBooting, setIsBooting] = useState(true);
@@ -305,6 +320,11 @@ function App() {
       className="bg-win-gray h-[100dvh] flex flex-col overflow-hidden relative text-base crt-effect"
       style={{ fontFamily: font.value }}
     >
+      {/* Seasonal Particle Effect */}
+      {seasonalActive && activeSeason && (
+        <SeasonalEffect season={activeSeason} />
+      )}
+
       {/* Scanline Effect */}
       <div className="scanline-overlay absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.08)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_4px,6px_100%] z-[9999] opacity-20"></div>
 
@@ -319,8 +339,8 @@ function App() {
         <div
           className="flex-1 relative overflow-hidden shadow-inner m-1 border-2 border-[#808080]"
           style={{
-            background: wallpaper.type === 'color' ? wallpaper.value : `url(${wallpaper.value})`,
-            backgroundColor: wallpaper.color || wallpaper.value,
+            background: effectiveWallpaper.type === 'color' ? effectiveWallpaper.value : `url(${effectiveWallpaper.value})`,
+            backgroundColor: effectiveWallpaper.color || effectiveWallpaper.value,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
@@ -389,6 +409,12 @@ function App() {
                         onFontChange={setFont}
                         onOpenWindow={openWindow}
                         data={win.data}
+                        holidayEnabled={holidayEnabled}
+                        onToggleHoliday={toggleHoliday}
+                        activeHoliday={activeHoliday}
+                        seasonalEnabled={seasonalEnabled}
+                        onToggleSeasonal={toggleSeasonal}
+                        activeSeason={activeSeason}
                       />
                     </Suspense>
                   </ErrorBoundary>
